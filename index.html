@@ -1,0 +1,49 @@
+<!doctype html>
+
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CarHolicBaku</title>
+  <style>
+    :root{--bar-height:64px;--bar-bg:#d0d0d0}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial}
+    /* Üst gri şerit */
+    .topbar{
+      height:var(--bar-height);
+      background:var(--bar-bg);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:0 1px 3px rgba(0,0,0,0.08);
+    }.brand{
+  font-weight:700;
+  letter-spacing:0.6px;
+  font-size:20px;
+}
+
+/* Ana içerik örneği */
+.container{
+  padding:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:calc(100% - var(--bar-height));
+  background:linear-gradient(180deg,#f7f7f7,#ffffff);
+}
+
+@media (max-width:420px){
+  :root{--bar-height:56px}
+  .brand{font-size:18px}
+}
+
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">CarHolicBaku</div>
+  </header>  <main class="container">
+    <p>Site hazır. Üstteki gri şerit ve ortada yazı görünüyor.</p>
+  </main>
+</body>
+</html>
