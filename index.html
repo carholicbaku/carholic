@@ -1,212 +1,175 @@
-<!doctype html>
-
+<!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CarHolicBaku</title>
-  <style>
-    :root{--bar-height:64px;--bar-bg:#d0d0d0}
-    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial}
-    /* Üst gri şerit */
-    .topbar{
-      height:var(--bar-height);
-      background:var(--bar-bg);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      box-shadow:0 1px 3px rgba(0,0,0,0.08);
-    }.brand{
-  font-weight:700;
-  letter-spacing:0.6px;
-  font-size:20px;
-}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CarHolicBaku</title>
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #1a1a1a;
+        color: white;
+        overflow-x: hidden;
+    }
 
-/* Ana içerik örneği */
-.container{
-  padding:24px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  height:calc(100% - var(--bar-height));
-  background:linear-gradient(180deg,#f7f7f7,#ffffff);
-}
+    /* Üst şerit */
+    .header {
+        width: 100%;
+        background: black;
+        padding: 20px 0;
+        text-align: center;
+        font-size: 28px;
+        font-weight: bold;
+        position: fixed;
+        top: 0;
+        z-index: 10;
+    }
 
-@media (max-width:420px){
-  :root{--bar-height:56px}
-  .brand{font-size:18px}
-}
+    /* Kart container */
+    .cards {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* 2 sütun */
+        gap: 15px;
+        max-width: 900px;
+        margin: 100px auto 50px;
+        padding: 0 10px;
+        box-sizing: border-box;
+        justify-items: center;
+    }
 
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;padding:20px;} </style>
+    /* Kartlar */
+    .card {
+        width: 100%;           /* genişlik grid kolonuna uyumlu */
+        height: 300px;         /* sabit yükseklik */
+        background: #313131;
+        border-radius: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        transition: 0.2s ease-in-out;
+    }
 
+    .img {
+        height: 30%;
+        position: absolute;
+        transition: 0.2s ease-in-out;
+        z-index: 1;
+    }
+
+    .textBox {
+        opacity: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        z-index: 2;
+        transition: 0.2s;
+    }
+
+    .textBox .head { font-size: 20px; font-weight: bold; }
+    .textBox .price { font-size: 17px; font-weight: bold; }
+    .textBox span { font-size: 12px; color: lightgrey; }
+
+    .card:hover .textBox { opacity: 1; }
+    .card:hover .img { height: 65%; filter: blur(7px); animation: anim 3s infinite; }
+    @keyframes anim { 0% { transform: translateY(0); } 50% { transform: translateY(-20px); } 100% { transform: translateY(0); } }
+    .card:hover { transform: scale(1.04) rotate(-1deg); }
+
+    /* Mobilde 2 sütun ve daha dolu kartlar */
+    @media (max-width: 600px) {
+        .cards { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 0 5px; }
+        .card { height: 250px; }
+        .img { height: 35%; }
+    }
+
+</style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">CarHolicBaku</div>
-  </header>  <main class="container">
-    <div class="grid">
-      <!-- 8 kart -->
-      <div class="card">  <svg class="img" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="100%" height="100%" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 784.37 1277.39" xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"></metadata>
-  <g id="_1421394342400">
-   <g>
-    <polygon fill="#343434" fill-rule="nonzero" points="392.07,0 383.5,29.11 383.5,873.74 392.07,882.29 784.13,650.54"></polygon>
-    <polygon fill="#8C8C8C" fill-rule="nonzero" points="392.07,0 -0,650.54 392.07,882.29 392.07,472.33"></polygon>
-    <polygon fill="#3C3C3B" fill-rule="nonzero" points="392.07,956.52 387.24,962.41 387.24,1263.28 392.07,1277.38 784.37,724.89"></polygon>
-    <polygon fill="#8C8C8C" fill-rule="nonzero" points="392.07,1277.38 392.07,956.52 -0,724.89"></polygon>
-    <polygon fill="#141414" fill-rule="nonzero" points="392.07,882.29 784.13,650.54 392.07,472.33"></polygon>
-    <polygon fill="#393939" fill-rule="nonzero" points="0,650.54 392.07,882.29 392.07,472.33"></polygon>
-   </g>
-  </g>
- </g>
-</svg>
-  <div class="textBox">
-    <p class="text head">Ethereum</p>
-    <span>Cryptocurrency</span>
-    <p class="text price">1.654,34€</p>
-  </div></div>
-      <div class="card">  <svg class="img" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="100%" height="100%" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 784.37 1277.39" xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"></metadata>
-  <g id="_1421394342400">
-   <g>
-    <polygon fill="#343434" fill-rule="nonzero" points="392.07,0 383.5,29.11 383.5,873.74 392.07,882.29 784.13,650.54"></polygon>
-    <polygon fill="#8C8C8C" fill-rule="nonzero" points="392.07,0 -0,650.54 392.07,882.29 392.07,472.33"></polygon>
-    <polygon fill="#3C3C3B" fill-rule="nonzero" points="392.07,956.52 387.24,962.41 387.24,1263.28 392.07,1277.38 784.37,724.89"></polygon>
-    <polygon fill="#8C8C8C" fill-rule="nonzero" points="392.07,1277.38 392.07,956.52 -0,724.89"></polygon>
-    <polygon fill="#141414" fill-rule="nonzero" points="392.07,882.29 784.13,650.54 392.07,472.33"></polygon>
-    <polygon fill="#393939" fill-rule="nonzero" points="0,650.54 392.07,882.29 392.07,472.33"></polygon>
-   </g>
-  </g>
- </g>
-</svg>
-  <div class="textBox">
-    <p class="text head">Ethereum</p>
-    <span>Cryptocurrency</span>
-    <p class="text price">1.654,34€</p>
-  </div></div>
-      <div class="card">  <svg class="img" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="100%" height="100%" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 784.37 1277.39" xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"></metadata>
-  <g id="_1421394342400">
-   <g>
-    <polygon fill="#343434" fill-rule="nonzero" points="392.07,0 383.5,29.11 383.5,873.74 392.07,882.29 784.13,650.54"></polygon>
-    <polygon fill="#8C8C8C" fill-rule="nonzero" points="392.07,0 -0,650.54 392.07,882.29 392.07,472.33"></polygon>
-    <polygon fill="#3C3C3B" fill-rule="nonzero" points="392.07,956.52 387.24,962.41 387.24,1263.28 392.07,1277.38 784.37,724.89"></polygon>
-    <polygon fill="#8C8C8C" fill-rule="nonzero" points="392.07,1277.38 392.07,956.52 -0,724.89"></polygon>
-    <polygon fill="#141414" fill-rule="nonzero" points="392.07,882.29 784.13,650.54 392.07,472.33"></polygon>
-    <polygon fill="#393939" fill-rule="nonzero" points="0,650.54 392.07,882.29 392.07,472.33"></polygon>
-   </g>
-  </g>
- </g>
-</svg>
-  <div class="textBox">
-    <p class="text head">Ethereum</p>
-    <span>Cryptocurrency</span>
-    <p class="text price">1.654,34€</p>
-  </div></div>
-      <div class="card">  <svg class="img" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="100%" height="100%" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 784.37 1277.39" xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"></metadata>
-  <g id="_1421394342400">
-   <g>
-    <polygon fill="#343434" fill-rule="nonzero" points="392.07,0 383.5,29.11 383.5,873.74 392.07,882.29 784.13,650.54"></polygon>
-    <polygon fill="#8C8C8C" fill-rule="nonzero" points="392.07,0 -0,650.54 392.07,882.29 392.07,472.33"></polygon>
-    <polygon fill="#3C3C3B" fill-rule="nonzero" points="392.07,956.52 387.24,962.41 387.24,1263.28 392.07,1277.38 784.37,724.89"></polygon>
-    <polygon fill="#8C8C8C" fill-rule="nonzero" points="392.07,1277.38 392.07,956.52 -0,724.89"></polygon>
-    <polygon fill="#141414" fill-rule="nonzero" points="392.07,882.29 784.13,650.54 392.07,472.33"></polygon>
-    <polygon fill="#393939" fill-rule="nonzero" points="0,650.54 392.07,882.29 392.07,472.33"></polygon>
-   </g>
-  </g>
- </g>
-</svg>
-  <div class="textBox">
-    <p class="text head">Ethereum</p>
-    <span>Cryptocurrency</span>
-    <p class="text price">1.654,34€</p>
-  </div></div>
-      <div class="card">  <svg class="img" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="100%" height="100%" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 784.37 1277.39" xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"></metadata>
-  <g id="_1421394342400">
-   <g>
-    <polygon fill="#343434" fill-rule="nonzero" points="392.07,0 383.5,29.11 383.5,873.74 392.07,882.29 784.13,650.54"></polygon>
-    <polygon fill="#8C8C8C" fill-rule="nonzero" points="392.07,0 -0,650.54 392.07,882.29 392.07,472.33"></polygon>
-    <polygon fill="#3C3C3B" fill-rule="nonzero" points="392.07,956.52 387.24,962.41 387.24,1263.28 392.07,1277.38 784.37,724.89"></polygon>
-    <polygon fill="#8C8C8C" fill-rule="nonzero" points="392.07,1277.38 392.07,956.52 -0,724.89"></polygon>
-    <polygon fill="#141414" fill-rule="nonzero" points="392.07,882.29 784.13,650.54 392.07,472.33"></polygon>
-    <polygon fill="#393939" fill-rule="nonzero" points="0,650.54 392.07,882.29 392.07,472.33"></polygon>
-   </g>
-  </g>
- </g>
-</svg>
-  <div class="textBox">
-    <p class="text head">Ethereum</p>
-    <span>Cryptocurrency</span>
-    <p class="text price">1.654,34€</p>
-  </div></div>
-      <div class="card">  <svg class="img" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="100%" height="100%" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 784.37 1277.39" xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"></metadata>
-  <g id="_1421394342400">
-   <g>
-    <polygon fill="#343434" fill-rule="nonzero" points="392.07,0 383.5,29.11 383.5,873.74 392.07,882.29 784.13,650.54"></polygon>
-    <polygon fill="#8C8C8C" fill-rule="nonzero" points="392.07,0 -0,650.54 392.07,882.29 392.07,472.33"></polygon>
-    <polygon fill="#3C3C3B" fill-rule="nonzero" points="392.07,956.52 387.24,962.41 387.24,1263.28 392.07,1277.38 784.37,724.89"></polygon>
-    <polygon fill="#8C8C8C" fill-rule="nonzero" points="392.07,1277.38 392.07,956.52 -0,724.89"></polygon>
-    <polygon fill="#141414" fill-rule="nonzero" points="392.07,882.29 784.13,650.54 392.07,472.33"></polygon>
-    <polygon fill="#393939" fill-rule="nonzero" points="0,650.54 392.07,882.29 392.07,472.33"></polygon>
-   </g>
-  </g>
- </g>
-</svg>
-  <div class="textBox">
-    <p class="text head">Ethereum</p>
-    <span>Cryptocurrency</span>
-    <p class="text price">1.654,34€</p>
-  </div></div>
-      <div class="card">  <svg class="img" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="100%" height="100%" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 784.37 1277.39" xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"></metadata>
-  <g id="_1421394342400">
-   <g>
-    <polygon fill="#343434" fill-rule="nonzero" points="392.07,0 383.5,29.11 383.5,873.74 392.07,882.29 784.13,650.54"></polygon>
-    <polygon fill="#8C8C8C" fill-rule="nonzero" points="392.07,0 -0,650.54 392.07,882.29 392.07,472.33"></polygon>
-    <polygon fill="#3C3C3B" fill-rule="nonzero" points="392.07,956.52 387.24,962.41 387.24,1263.28 392.07,1277.38 784.37,724.89"></polygon>
-    <polygon fill="#8C8C8C" fill-rule="nonzero" points="392.07,1277.38 392.07,956.52 -0,724.89"></polygon>
-    <polygon fill="#141414" fill-rule="nonzero" points="392.07,882.29 784.13,650.54 392.07,472.33"></polygon>
-    <polygon fill="#393939" fill-rule="nonzero" points="0,650.54 392.07,882.29 392.07,472.33"></polygon>
-   </g>
-  </g>
- </g>
-</svg>
-  <div class="textBox">
-    <p class="text head">Ethereum</p>
-    <span>Cryptocurrency</span>
-    <p class="text price">1.654,34€</p>
-  </div></div>
-      <div class="card">  <svg class="img" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="100%" height="100%" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 784.37 1277.39" xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"></metadata>
-  <g id="_1421394342400">
-   <g>
-    <polygon fill="#343434" fill-rule="nonzero" points="392.07,0 383.5,29.11 383.5,873.74 392.07,882.29 784.13,650.54"></polygon>
-    <polygon fill="#8C8C8C" fill-rule="nonzero" points="392.07,0 -0,650.54 392.07,882.29 392.07,472.33"></polygon>
-    <polygon fill="#3C3C3B" fill-rule="nonzero" points="392.07,956.52 387.24,962.41 387.24,1263.28 392.07,1277.38 784.37,724.89"></polygon>
-    <polygon fill="#8C8C8C" fill-rule="nonzero" points="392.07,1277.38 392.07,956.52 -0,724.89"></polygon>
-    <polygon fill="#141414" fill-rule="nonzero" points="392.07,882.29 784.13,650.54 392.07,472.33"></polygon>
-    <polygon fill="#393939" fill-rule="nonzero" points="0,650.54 392.07,882.29 392.07,472.33"></polygon>
-   </g>
-  </g>
- </g>
-</svg>
-  <div class="textBox">
-    <p class="text head">Ethereum</p>
-    <span>Cryptocurrency</span>
-    <p class="text price">1.654,34€</p>
-  </div></div>
+
+<div class="header">CarHolicBaku</div>
+
+<div class="cards">
+    <!-- Kart 1 -->
+    <div class="card">
+        <svg class="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 784.37 1277.39">
+            <g>
+                <polygon fill="#343434" points="392,0 383,29 383,874 392,882 784,651"/>
+                <polygon fill="#8C8C8C" points="392,0 0,651 392,882 392,472"/>
+                <polygon fill="#3C3C3B" points="392,957 387,962 387,1263 392,1277 784,725"/>
+                <polygon fill="#8C8C8C" points="392,1277 392,957 0,725"/>
+                <polygon fill="#141414" points="392,882 784,651 392,472"/>
+                <polygon fill="#393939" points="0,651 392,882 392,472"/>
+            </g>
+        </svg>
+        <div class="textBox">
+            <p class="head">Ethereum</p>
+            <span>Cryptocurrency</span>
+            <p class="price">1.654,34€</p>
+        </div>
     </div>
-  </main>
+
+    <!-- Kart 2 -->
+    <div class="card">
+        <svg class="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 784.37 1277.39">
+            <g>
+                <polygon fill="#343434" points="392,0 383,29 383,874 392,882 784,651"/>
+                <polygon fill="#8C8C8C" points="392,0 0,651 392,882 392,472"/>
+                <polygon fill="#3C3C3B" points="392,957 387,962 387,1263 392,1277 784,725"/>
+                <polygon fill="#8C8C8C" points="392,1277 392,957 0,725"/>
+                <polygon fill="#141414" points="392,882 784,651 392,472"/>
+                <polygon fill="#393939" points="0,651 392,882 392,472"/>
+            </g>
+        </svg>
+        <div class="textBox">
+            <p class="head">Bitcoin</p>
+            <span>Cryptocurrency</span>
+            <p class="price">32.154,20€</p>
+        </div>
+    </div>
+
+    <!-- Kart 3 -->
+    <div class="card">
+        <svg class="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 784.37 1277.39">
+            <g>
+                <polygon fill="#343434" points="392,0 383,29 383,874 392,882 784,651"/>
+                <polygon fill="#8C8C8C" points="392,0 0,651 392,882 392,472"/>
+                <polygon fill="#3C3C3B" points="392,957 387,962 387,1263 392,1277 784,725"/>
+                <polygon fill="#8C8C8C" points="392,1277 392,957 0,725"/>
+                <polygon fill="#141414" points="392,882 784,651 392,472"/>
+                <polygon fill="#393939" points="0,651 392,882 392,472"/>
+            </g>
+        </svg>
+        <div class="textBox">
+            <p class="head">Litecoin</p>
+            <span>Cryptocurrency</span>
+            <p class="price">124,80€</p>
+        </div>
+    </div>
+
+    <!-- Kart 4 -->
+    <div class="card">
+        <svg class="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 784.37 1277.39">
+            <g>
+                <polygon fill="#343434" points="392,0 383,29 383,874 392,882 784,651"/>
+                <polygon fill="#8C8C8C" points="392,0 0,651 392,882 392,472"/>
+                <polygon fill="#3C3C3B" points="392,957 387,962 387,1263 392,1277 784,725"/>
+                <polygon fill="#8C8C8C" points="392,1277 392,957 0,725"/>
+                <polygon fill="#141414" points="392,882 784,651 392,472"/>
+                <polygon fill="#393939" points="0,651 392,882 392,472"/>
+            </g>
+        </svg>
+        <div class="textBox">
+            <p class="head">Solana</p>
+            <span>Cryptocurrency</span>
+            <p class="price">95,12€</p>
+        </div>
+    </div>
+
+</div>
 </body>
 </html>
