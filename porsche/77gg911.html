@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Porsche</title>
+
+<style>
+/* ===== SAYFA ===== */
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #121212;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* ===== GERİ BUTONU ===== */
+.back-button {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  padding: 12px 18px;
+  background: #8ed500;
+  border: none;
+  border-radius: 10px;
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.back-button:hover {
+  background: #6fa800;
+}
+
+/* ===== KART ===== */
+.card {
+  width: 90vw;
+  max-width: 520px;
+  border-radius: 30px;
+  background: #141414;
+  padding: 15px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 15px 35px;
+  transition: transform 0.4s ease;
+}
+
+.card:hover {
+  transform: scale(1.03);
+}
+
+/* ===== GÖRSEL ALANI ===== */
+.card .top-section {
+  height: 320px;
+  border-radius: 25px 25px 0 0;
+  background: url('../img/CHB911.jpg') no-repeat;
+  background-size: cover;
+  background-position: 50% 75%;
+}
+
+/* ÇIKINTILAR KALDIRILDI */
+.card .top-section .border,
+.card .top-section::before {
+  display: none;
+}
+
+/* ===== ALT BÖLÜM ===== */
+.card .bottom-section {
+  padding: 20px 10px;
+}
+
+.card .bottom-section .title {
+  display: block;
+  font-size: 22px;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  letter-spacing: 2px;
+}
+
+/* ===== BİLGİ SATIRI ===== */
+.card .bottom-section .row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 25px;
+}
+
+.card .bottom-section .row .item {
+  flex: 1;
+  text-align: center;
+  padding: 10px;
+  color: #fff;
+}
+
+.card .bottom-section .row .item .big-text {
+  font-size: 15px;
+  display: block;
+  font-weight: bold;
+}
+
+.card .bottom-section .row .item .regular-text {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.card .bottom-section .row .item:nth-child(2) {
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+</style>
+</head>
+
+<body>
+
+<button class="back-button" onclick="window.location.href='../index.html'">
+← Geri
+</button>
+
+<div class="card">
+  <div class="top-section"></div>
+
+  <div class="bottom-section">
+    <span class="title">Porsche</span>
+
+    <div class="row">
+      <div class="item">
+        <span class="big-text">Max. Sürət</span>
+        <span class="regular-text">320 km/s</span>
+      </div>
+
+      <div class="item">
+        <span class="big-text">Nadirlik</span>
+        <span class="regular-text">Çox Nadir</span>
+      </div>
+
+      <div class="item">
+        <span class="big-text">0 → 100</span>
+        <span class="regular-text">3.3 s</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+  </html>
