@@ -53,12 +53,21 @@
         transition: 0.2s ease-in-out;
     }
 
-    .img {
-        height: 30%;
-        position: absolute;
-        transition: 0.2s ease-in-out;
-        z-index: 1;
-    }
+    .card .img {
+    width: 100%;         /* Kart genişliğini tamamen kaplar */
+    height: 100%;        /* Kart yüksekliğini tamamen kaplar */
+    object-fit: cover;   /* Orantıyı bozmadan kırpma yapar */
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;          /* Bilgilerin altında */
+    transition: transform 0.2s ease-in-out;
+}
+
+/* Kart açıldığında resim biraz büyüyebilir (opsiyonel) */
+.card.open .img {
+    transform: scale(1.05);
+}
 
     .textBox {
         opacity: 0;
@@ -97,22 +106,22 @@
     <!-- Kart 1 -->
     <!-- Kart 1 -->
 <div class="card">
-    <img class="img" src="img/test7.jpg" alt="Ethereum">
+    <img class="img" src="./chb html/Aa11.jpg" alt="Ethereum">
     <div class="textBox">
-        <p class="head">Ethereum</p>
-        <span>Cryptocurrency</span>
-        <p class="price">1.654,34€</p>
+        <p class="head">Porsche 911</p>
+        <span>CarHolicBaku</span>
+        <p class="price">77-KZ-911</p>
     </div>
 </div>
 
     <!-- Kart 2 -->
     <!-- Kart 2 -->
 <div class="card">
-    <img class="img" src="img/test1a.jpg" alt="Ethereum">
+    <img class="img" src="./chb html/TestCHB.jpg" alt="Ethereum">
     <div class="textBox">
-        <p class="head">Ethereum</p>
-        <span>Cryptocurrency</span>
-        <p class="price">1.654,34€</p>
+        <p class="head">Bugatti</p>
+        <span>Nazar Holdings</span>
+        <p class="price">77-UU-777</p>
     </div>
 </div>
 
@@ -155,5 +164,53 @@
     </div>
 
 </div>
+    <script>
+const cards = document.querySelectorAll(".card");
+
+// Her kartın kendi özel sayfası
+const cardLinks = [
+    'porsche.html',
+    '77uu777.html',
+    'litecoin.html',
+    'solana.html'
+];
+
+cards.forEach((card, index) => {
+    let pressTimer;
+
+    // Masaüstü
+    card.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        pressTimer = setTimeout(() => {
+            window.location.href = cardLinks[index];
+        }, 600);
+    });
+    card.addEventListener('mouseup', () => clearTimeout(pressTimer));
+    card.addEventListener('mouseleave', () => clearTimeout(pressTimer));
+
+    // Mobil dokunmatik
+    card.addEventListener('touchstart', (e) => {
+        pressTimer = setTimeout(() => {
+            window.location.href = cardLinks[index];
+        }, 600);
+    });
+    card.addEventListener('touchend', () => clearTimeout(pressTimer));
+    card.addEventListener('touchmove', () => clearTimeout(pressTimer));
+
+    // Kısa tıklama / dokunma
+    card.addEventListener('click', (e) => {
+        e.stopPropagation();
+        cards.forEach(c => {
+            if(c !== card) c.classList.remove("open");
+        });
+        card.classList.toggle("open");
+    });
+});
+
+// Kart dışına tıklayınca tüm kartlar kapanır
+document.addEventListener('click', () => {
+    cards.forEach(card => card.classList.remove("open"));
+});
+</script>
 </body>
 </html>
