@@ -1,200 +1,147 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="tr">
 <head>
-  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
-  <title>Hello, World!</title>
-  <style>
-  /* From Uiverse.io by imtausef */ 
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bugatti</title>
+
+<style>
+/* ===== SAYFA ===== */
 body {
   display: flex;
-  justify-content: center; /* yatay ortalama */
-  align-items: center;     /* dikey ortalama */
-  min-height: 100vh;       /* sayfa yüksekliğini kapsar */
-  background: #121212;     /* isteğe bağlı arka plan rengi */
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #121212;
   margin: 0;
   font-family: Arial, sans-serif;
 }
 
+/* ===== GERİ BUTONU ===== */
+.back-button {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  padding: 12px 18px;
+  background: #8ed500;
+  border: none;
+  border-radius: 10px;
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 10;
+}
 
+.back-button:hover {
+  background: #6fa800;
+}
+
+/* ===== KART ===== */
+.card {
+  width: 90vw;
+  max-width: 520px;
+  border-radius: 30px;
+  background: #141414;
+  padding: 15px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 15px 35px;
+  transition: transform 0.4s ease;
+}
 
 .card:hover {
-  transform: scale(1.05);
+  transform: scale(1.03);
 }
 
-.card {
-  width: 350px;       /* Kartın genel genişliği */
-  border-radius: 25px;
-  padding: 10px;
-  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
+/* ===== GÖRSEL ALANI ===== */
 .card .top-section {
-  height: 250px;      /* Görsel pencerenin yüksekliği arttırıldı */
-  border-radius: 15px 15px 0 0; /* Sadece üst köşeleri yuvarlak */
+  height: 320px;
+  border-radius: 25px 25px 0 0;
   background: url('img/CHB777.jpg') no-repeat;
   background-size: cover;
   background-position: 50% 75%;
-  position: relative;
 }
 
-
-.card .top-section .border {
-  border-bottom-right-radius: 10px;
-  height: 30px;
-  width: 130px;
-  background: white;
-  background: #141414;
-  position: relative;
-  transform: skew(-40deg);
-  box-shadow: -10px -10px 0 0 #141414;
-}
-
+/* ÇIKINTILAR KALDIRILDI */
 .card .top-section .border,
-.card .top-section .border::before,
 .card .top-section::before {
-    display: none; /* Tüm çıkıntıları gizle */
+  display: none;
 }
 
-.card .top-section::before {
-  content: "";
-  position: absolute;
-  top: 30px;
-  left: 0;
-  background: rgba(255, 255, 255, 0);
-  height: 15px;
-  width: 15px;
-  border-top-left-radius: 15px;
-  box-shadow: -5px -5px 0 2px #1b233d;
-}
-
-.card .top-section .icons {
-  position: absolute;
-  top: 0;
-  width: 100%;
-  height: 30px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.card .top-section .icons .logo {
-  height: 100%;
-  aspect-ratio: 1;
-  padding: 7px 0 7px 15px;
-}
-
-.card .top-section .icons .logo .top-section {
-  height: 100%;
-}
-
-.card .top-section .icons .social-media {
-  height: 100%;
-  padding: 8px 15px;
-  display: flex;
-  gap: 7px;
-}
-
-.card .top-section .icons .social-media .svg {
-  height: 100%;
-  fill: #1b233d;
-}
-
-.card .top-section .icons .social-media .svg:hover {
-  fill: white;
-}
-
+/* ===== ALT BÖLÜM ===== */
 .card .bottom-section {
-  margin-top: 15px;
-  padding: 10px 5px;
+  padding: 20px 10px;
 }
 
 .card .bottom-section .title {
   display: block;
-  font-size: 17px;
-  font-weight: bolder;
+  font-size: 22px;
+  font-weight: bold;
   color: white;
   text-align: center;
   letter-spacing: 2px;
 }
 
+/* ===== BİLGİ SATIRI ===== */
 .card .bottom-section .row {
   display: flex;
   justify-content: space-between;
-  margin-top: 20px;
+  margin-top: 25px;
 }
 
 .card .bottom-section .row .item {
-  flex: 30%;
+  flex: 1;
   text-align: center;
-  padding: 5px;
+  padding: 10px;
   color: #fff;
 }
 
 .card .bottom-section .row .item .big-text {
-  font-size: 12px;
+  font-size: 15px;
   display: block;
+  font-weight: bold;
 }
 
 .card .bottom-section .row .item .regular-text {
-  font-size: 9px;
+  font-size: 12px;
+  opacity: 0.8;
 }
 
 .card .bottom-section .row .item:nth-child(2) {
-  border-left: 1px solid rgba(255, 255, 255, 0.126);
-  border-right: 1px solid rgba(255, 255, 255, 0.126);
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
 }
-
-  .back-button {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  padding: 10px 15px;
-  background-color: #8ed500;
-  border: none;
-  border-radius: 8px;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.back-button:hover {
-  background-color: #6fa800;
-}
-  
-  </style>
+</style>
 </head>
-<body>
-  <!-- Geri Butonu -->
-  <button class="back-button" onclick="goBack()">Geri</button>
 
-  <!-- Kart -->
-  <div class="card">
-    <div class="top-section"></div>
-    <div class="bottom-section">
-      <span class="title">Bugatti</span>
-      <div class="row row1">
-        <div class="item">
-          <span class="big-text">Max. Sürət</span>
-          <span class="regular-text">350 km/s</span>
-        </div>
-        <div class="item">
-          <span class="big-text">Nadirlik</span>
-          <span class="regular-text">Çox Nadir</span>
-        </div>
-        <div class="item">
-          <span class="big-text">0 > 100</span>
-          <span class="regular-text">3 s</span>
-        </div>
+<body>
+
+<button class="back-button" onclick="window.location.href='index.html'">
+← Geri
+</button>
+
+<div class="card">
+  <div class="top-section"></div>
+
+  <div class="bottom-section">
+    <span class="title">BUGATTI</span>
+
+    <div class="row">
+      <div class="item">
+        <span class="big-text">Max. Sürət</span>
+        <span class="regular-text">350 km/s</span>
+      </div>
+
+      <div class="item">
+        <span class="big-text">Nadirlik</span>
+        <span class="regular-text">Çox Nadir</span>
+      </div>
+
+      <div class="item">
+        <span class="big-text">0 → 100</span>
+        <span class="regular-text">3 s</span>
       </div>
     </div>
   </div>
+</div>
 
-  <script>
-    function goBack() {
-      window.location.href = "index.html"; // index.html sayfasına yönlendir
-    }
-  </script>
 </body>
 </html>
-
