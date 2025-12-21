@@ -12,6 +12,7 @@ body {
     background: #1a1a1a;
     color: white;
     overflow-x: hidden;
+    padding-bottom: 90px; /* alt menü için boşluk */
 }
 
 /* Header */
@@ -27,7 +28,7 @@ body {
     z-index: 10;
 }
 
-/* Arama alanı */
+/* Arama */
 .searchWrapper {
     margin-top: 90px;
     display: flex;
@@ -35,7 +36,6 @@ body {
     margin-bottom: 20px;
 }
 
-/* From Uiverse.io by OnlyCodeChannel */
 .searchBox {
     display: flex;
     max-width: 230px;
@@ -45,6 +45,7 @@ body {
     border-radius: 50px;
     position: relative;
 }
+
 .searchInput {
     border: none;
     background: none;
@@ -53,6 +54,7 @@ body {
     font-size: 15px;
     padding: 18px 50px 18px 22px;
 }
+
 .searchButton {
     position: absolute;
     right: 6px;
@@ -75,7 +77,6 @@ body {
 }
 
 .card {
-    width: 100%;
     height: 300px;
     background: #313131;
     border-radius: 20px;
@@ -117,6 +118,60 @@ body {
 @media (max-width: 600px) {
     .card { height: 250px; }
 }
+
+/* ================= ALT MENÜ (SAYFA UYUMLU) ================= */
+
+.button-container {
+    position: fixed;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    width: 270px;
+    height: 48px;
+    align-items: center;
+    justify-content: space-around;
+
+    /* SAYFA UYUMLU RENKLER */
+    background: linear-gradient(145deg, #202020, #2a2a2a);
+    border: 1px solid #333;
+
+    border-radius: 14px;
+    z-index: 20;
+
+    box-shadow:
+      0 8px 20px rgba(0,0,0,0.6),
+      inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.button {
+    border: none;
+    background: transparent;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #bdbdbd;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.button:hover {
+    color: #2AF598;
+    background: rgba(42, 245, 152, 0.12);
+    transform: translateY(-2px);
+}
+
+.button:active {
+    transform: scale(0.95);
+}
+
+.icon {
+    font-size: 20px;
+}
 </style>
 </head>
 
@@ -127,14 +182,11 @@ body {
 <div class="searchWrapper">
     <div class="searchBox">
         <input class="searchInput" id="searchInput" type="text" placeholder="Ara...">
-        <button class="searchButton">
-            🔍
-        </button>
+        <button class="searchButton">🔍</button>
     </div>
 </div>
 
 <div class="cards">
-
     <div class="card">
         <img class="img" src="img/CHB911.jpg">
         <div class="textBox">
@@ -152,25 +204,22 @@ body {
             <p class="price">77-UU-777</p>
         </div>
     </div>
+</div>
 
-    <div class="card">
-        <img class="img" src="img/000.jpg">
-        <div class="textBox">
-            <p class="head">Aa</p>
-            <span>Bb</span>
-            <p class="price">000</p>
-        </div>
-    </div>
-
-    <div class="card">
-        <img class="img" src="img/000.jpg">
-        <div class="textBox">
-            <p class="head">Aa</p>
-            <span>Bb</span>
-            <p class="price">000</p>
-        </div>
-    </div>
-
+<!-- ALT MENÜ -->
+<div class="button-container">
+    <button class="button" onclick="location.href='index.html'">
+        🏠
+    </button>
+    <button class="button" id="openSearch">
+        🔍
+    </button>
+    <button class="button">
+        👤
+    </button>
+    <button class="button">
+        🛒
+    </button>
 </div>
 
 <script>
@@ -179,12 +228,9 @@ const searchInput = document.getElementById("searchInput");
 
 const cardLinks = [
     "porsche/77gg911.html",
-    "bugatti/77uu777.html",
-    "litecoin.html",
-    "solana.html"
+    "bugatti/77uu777.html"
 ];
 
-// kısa tıklama / uzun basma
 cards.forEach((card, index) => {
     let timer;
 
@@ -196,13 +242,11 @@ cards.forEach((card, index) => {
 
     card.addEventListener("mouseup", () => clearTimeout(timer));
     card.addEventListener("mouseleave", () => clearTimeout(timer));
-
     card.addEventListener("touchstart", () => {
         timer = setTimeout(() => {
             window.location.href = cardLinks[index];
         }, 600);
     });
-
     card.addEventListener("touchend", () => clearTimeout(timer));
 
     card.addEventListener("click", (e) => {
@@ -216,14 +260,27 @@ document.addEventListener("click", () => {
     cards.forEach(card => card.classList.remove("open"));
 });
 
-// arama filtresi
 searchInput.addEventListener("keyup", () => {
     const value = searchInput.value.toLowerCase();
-
     cards.forEach(card => {
-        const text = card.innerText.toLowerCase();
-        card.style.display = text.includes(value) ? "block" : "none";
+        card.style.display = card.innerText.toLowerCase().includes(value)
+            ? "block"
+            : "none";
     });
+});
+    
+const openSearchBtn = document.getElementById("openSearch");
+
+openSearchBtn.addEventListener("click", () => {
+    // Arama alanını görünür yap + odaklan
+    window.scrollTo({
+        top: document.querySelector(".searchWrapper").offsetTop - 80,
+        behavior: "smooth"
+    });
+
+    setTimeout(() => {
+        searchInput.focus();
+    }, 400);
 });
 </script>
 
