@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Site</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        color: #111;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    body.dark {
+        background-color: #0f0f0f;
+        color: #fff;
+    }
+
+    h1 {
+        margin-top: 40px;
+    }
+
+    .theme-btn {
+        margin: 20px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        background: #222;
+        color: #fff;
+        font-size: 14px;
+    }
+
+    body.dark .theme-btn {
+        background: #ddd;
+        color: #000;
+    }
+
+    .image-container {
+        display: flex;
+        gap: 20px;
+        margin-top: 30px;
+    }
+
+    .image-box {
+        width: 220px;
+        height: 140px;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+    }
+
+    .image-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+</style>
+</head>
+<body>
+
+<h1>Test Text</h1>
+
+<button class="theme-btn" onclick="toggleTheme()">Gece / Gündüz Değiştir</button>
+
+<div class="image-container">
+    <div class="image-box">
+        <img id="img1" src="arb1a.png" alt="Görsel 1">
+    </div>
+    <div class="image-box">
+        <img id="img2" src="arb2a.png" alt="Görsel 2">
+    </div>
+</div>
+
+<script>
+    let darkMode = false;
+
+    function toggleTheme() {
+        darkMode = !darkMode;
+        document.body.classList.toggle("dark");
+
+        document.getElementById("img1").src = darkMode ? "arb1b.png" : "arb1a.png";
+        document.getElementById("img2").src = darkMode ? "arb2b.png" : "arb2a.png";
+    }
+</script>
+
+</body>
+</html>
