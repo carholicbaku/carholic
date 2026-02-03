@@ -4,51 +4,102 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: #1a1a1a;
-        color: white;
-        line-height: 1.6;
-        padding: 20px;
-    }
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #1a1a1a;
+    color: white;
+    line-height: 1.6;
+    padding: 0;
+}
 
-    .header {
-        width: 100%;
-        background: black;
-        padding: 20px 0;
-        text-align: center;
-        font-size: 28px;
-        font-weight: bold;
-        position: fixed;
-        top: 0;
-        z-index: 10;
-    }
+.header {
+    width: 100vw; 
+    background: black;
+    padding: 20px 0;
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    box-sizing: border-box;
+}
 
-    .content {
-        max-width: 900px;
-        margin: 140px auto 50px; /* header sabit olduğu için üst boşluk */
-        padding: 0 15px;
-    }
+.content {
+    max-width: 900px;
+    margin: 140px auto 50px; 
+    padding: 0 15px;
+}
 
-    h1, h2 {
-        color: #2AF598;
-        margin-top: 30px;
-    }
+h1, h2 {
+    color: #2AF598;
+    margin-top: 30px;
+}
 
-    p, li {
-        color: #ccc;
-    }
+p, li {
+    color: #ccc;
+}
 
-    ul {
-        padding-left: 20px;
-    }
+ul {
+    padding-left: 20px;
+}
 
-    /* Mobil uyum */
-    @media (max-width: 600px) {
-        .header { font-size: 24px; padding: 15px 0; }
-        .content { margin: 120px 15px 50px; }
-    }
+/* Geri butonu */
+.backButton {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 8px 15px;
+    background: #2AF598;
+    color: black;
+    font-weight: bold;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.backButton:hover {
+    background: #00c0ff;
+}
+
+/* Sosyal medya */
+.socialLinks {
+    margin-top: 40px;
+    display: flex;
+    gap: 25px;
+}
+
+.socialLinks a {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 80px;   /* büyütüldü */
+    height: 80px;
+    border-radius: 50%;
+    background: #fff;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.socialLinks a:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px #2AF598;
+}
+
+/* İkonlar */
+.socialLinks img {
+    width: 50px;  /* ikon boyutu büyütüldü */
+    height: 50px;
+}
+
+/* Mobil uyum */
+@media (max-width: 600px) {
+    .header { font-size: 24px; padding: 15px 0; }
+    .content { margin: 120px 15px 50px; }
+    .socialLinks a { width: 60px; height: 60px; }
+    .socialLinks img { width: 38px; height: 38px; }
+}
 </style>
 </head>
 <body>
@@ -56,6 +107,8 @@
 <div class="header">CarHolicBaku</div>
 
 <div class="content">
+    <a href="javascript:history.back()" class="backButton">← Geri</a>
+
     <h1>Hakkımızda</h1>
     <p>CarHolic olaraq, avtomobil həvəskarları üçün unikal bir platform yaratmağı məqsəd qoymuşuq. Bizim sayt vasitəsilə istifadəçilər müxtəlif avtomobilləri kəşf edə, onların xüsusiyyətləri və məlumatları haqqında detallı məlumat əldə edə bilərlər.</p>
 
@@ -73,6 +126,16 @@
     <p>Biz daima saytımızı inkişaf etdiririk. Yeni funksiyalar, daha geniş məlumat bazası və istifadəçi təcrübəsini artıracaq yeniliklər daim əlavə olunur. CarHolic olaraq məqsədimiz, hər avtomobil həvəskarının ehtiyacını qarşılamaq və onlara unikal bir təcrübə təqdim etməkdir.</p>
 
     <p><strong>CarHolic — Avtomobil dünyası bir toxunuşda.</strong></p>
+
+    <!-- Sosyal medya -->
+    <div class="socialLinks">
+        <a href="https://www.tiktok.com/@carholicbaku" target="_blank">
+            <img src="https://upload.wikimedia.org/wikipedia/en/0/09/TikTok_logo.svg" alt="TikTok">
+        </a>
+        <a href="https://www.instagram.com/carholicbaku" target="_blank">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram">
+        </a>
+    </div>
 </div>
 
 </body>
