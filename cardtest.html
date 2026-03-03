@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Car Archive Card</title>
+<style>
+
+body{
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    font-family: 'Segoe UI', sans-serif;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.car-card{
+    width:340px;
+    border-radius:20px;
+    overflow:hidden;
+    background:rgba(255,255,255,0.08);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    transition:0.4s ease;
+    color:white;
+}
+
+.car-card:hover{
+    transform:translateY(-10px);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+}
+
+.car-image{
+    width:100%;
+    height:210px;
+    object-fit:cover;
+}
+
+.car-content{
+    padding:18px;
+}
+
+.car-title{
+    font-size:20px;
+    font-weight:600;
+    margin-bottom:12px;
+}
+
+.car-info{
+    font-size:14px;
+    line-height:1.7;
+    opacity:0.9;
+}
+
+.info-row{
+    display:flex;
+    justify-content:space-between;
+}
+
+.badge{
+    margin-top:15px;
+    padding:6px 12px;
+    background:linear-gradient(90deg,#00c6ff,#0072ff);
+    border-radius:30px;
+    font-size:12px;
+    display:inline-block;
+    font-weight:600;
+    letter-spacing:0.5px;
+}
+
+</style>
+</head>
+<body>
+
+<div class="car-card">
+    <img src="/storage/emulated/0/Pictures/Telegram/IMG_20260228_233749_800.jpg" class="car-image">
+
+    <div class="car-content">
+        <div class="car-title">
+            Porsche 911 (2018)
+        </div>
+
+        <div class="car-info">
+            <div class="info-row">
+                <span>Rəng:</span>
+                <span>Qırmızı</span>
+            </div>
+            <div class="info-row">
+                <span>Mühərrik:</span>
+                <span>4.0L V8</span>
+            </div>
+            <div class="info-row">
+                <span>At Gücü:</span>
+                <span>612 HP</span>
+            </div>
+            <div class="info-row">
+                <span>Görülmə Tarixi:</span>
+                <span>12.02.2026</span>
+            </div>
+        </div>
+
+        <div class="badge">
+            CHBcode: AZ-00047
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
