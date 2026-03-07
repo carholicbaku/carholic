@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CarHolicBaku</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&family=Barlow+Condensed:wght@200;300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #080808;
+      --carbon: #111111;
+      --dark: #1a1a1a;
+      --panel: #161616;
+      --border: rgba(255,255,255,0.07);
+      --gold: #c9a84c;
+      --gold-light: #e8c870;
+      --gold-dim: rgba(201,168,76,0.15);
+      --white: #f0ece3;
+      --muted: rgba(240,236,227,0.45);
+      --red: #c0392b;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Rajdhani', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999; opacity: 0.4;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 0 24px;
+      height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: linear-gradient(to bottom, rgba(8,8,8,0.98), rgba(8,8,8,0.85));
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: var(--gold);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 14px; color: var(--black);
+      flex-shrink: 0;
+    }
+    .logo-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px; letter-spacing: 3px;
+      color: var(--white);
+    }
+    .logo-text span { color: var(--gold); }
+
+    nav { display: flex; align-items: center; gap: 6px; }
+    .nav-btn {
+      background: none; border: none; cursor: pointer;
+      width: 40px; height: 40px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted); font-size: 18px;
+      transition: all 0.2s; position: relative;
+    }
+    .nav-btn:hover, .nav-btn.active { color: var(--gold); background: var(--gold-dim); }
+
+    /* ── HERO ── */
+    .hero {
+      padding-top: 64px; min-height: 220px;
+      display: flex; align-items: flex-end;
+      background: linear-gradient(135deg, #0d0d0d 0%, #111 50%, #0a0a0a 100%);
+      position: relative; overflow: hidden;
+      padding-bottom: 32px; padding-left: 24px;
+    }
+    .hero::after {
+      content: 'CARHOLIC';
+      position: absolute; right: -20px; top: 50%; transform: translateY(-50%);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(80px, 18vw, 180px);
+      color: rgba(255,255,255,0.018);
+      letter-spacing: 10px; white-space: nowrap; pointer-events: none; line-height: 1;
+    }
+    .hero-stripe {
+      position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+      background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+    }
+    .hero-content { position: relative; z-index: 1; }
+    .hero-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; font-weight: 300; letter-spacing: 5px; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 6px;
+    }
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(42px, 10vw, 72px); letter-spacing: 4px; line-height: 0.9;
+      color: var(--white);
+    }
+    .hero-title span { color: var(--gold); }
+    .hero-sub {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 200; letter-spacing: 6px;
+      color: var(--muted); margin-top: 8px; text-transform: uppercase;
+    }
+
+    /* ── SECTION HEADER ── */
+    .section-head {
+      padding: 32px 24px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .section-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; font-weight: 400; letter-spacing: 5px; text-transform: uppercase;
+      color: var(--gold); display: flex; align-items: center; gap: 10px;
+    }
+    .section-title::before { content: ''; display: block; width: 20px; height: 1px; background: var(--gold); }
+    .section-count { font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 2px; color: var(--muted); }
+
+    /* ── SEARCH BAR ── */
+    .search-wrap { padding: 0 24px 24px; }
+    .search-bar {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 16px; transition: border-color 0.2s;
+    }
+    .search-bar:focus-within { border-color: rgba(201,168,76,0.4); }
+    .search-bar svg { color: var(--gold); flex-shrink: 0; }
+    .search-bar input {
+      flex: 1; background: none; border: none; outline: none;
+      color: var(--white); font-family: 'Rajdhani', sans-serif;
+      font-size: 15px; font-weight: 500; letter-spacing: 0.5px;
+    }
+    .search-bar input::placeholder { color: var(--muted); }
+
+    /* ── FILTER TABS ── */
+    .filters {
+      padding: 0 20px 20px; display: flex; gap: 8px;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .filters::-webkit-scrollbar { display: none; }
+    .filter-tab {
+      padding: 6px 16px; border: 1px solid var(--border); border-radius: 20px;
+      background: none; cursor: pointer;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px; font-weight: 400; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--muted); white-space: nowrap; transition: all 0.2s; flex-shrink: 0;
+    }
+    .filter-tab:hover { color: var(--white); border-color: rgba(255,255,255,0.2); }
+    .filter-tab.active { background: var(--gold); border-color: var(--gold); color: var(--black); font-weight: 600; }
+
+    /* ── CAR CARDS ── */
+    .cars-grid { padding: 0 16px 120px; display: flex; flex-direction: column; gap: 3px; }
+
+    .car-card {
+      background: var(--carbon); border-radius: 14px; overflow: hidden;
+      border: 1px solid var(--border); cursor: pointer;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.25s, box-shadow 0.25s;
+      position: relative;
+      animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .car-card:nth-child(1) { animation-delay: 0.05s; }
+    .car-card:nth-child(2) { animation-delay: 0.12s; }
+    .car-card:nth-child(3) { animation-delay: 0.19s; }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .car-card:active { transform: scale(0.98); }
+    .car-card:hover { border-color: rgba(201,168,76,0.3); box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(201,168,76,0.1); }
+
+    .car-card.featured { border-color: rgba(201,168,76,0.25); }
+    .car-card.featured .img-wrap::after {
+      content: 'FEATURED';
+      position: absolute; top: 12px; left: 12px;
+      background: var(--gold); color: var(--black);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 11px; letter-spacing: 2px;
+      padding: 3px 8px; border-radius: 4px;
+    }
+
+    .card-inner { display: flex; gap: 0; }
+
+    .img-wrap {
+      width: 140px; min-width: 140px; height: 110px;
+      position: relative; overflow: hidden; flex-shrink: 0;
+    }
+    .img-wrap img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.4s ease;
+      filter: brightness(0.9) contrast(1.05) saturate(0.9);
+    }
+    .car-card:hover .img-wrap img { transform: scale(1.06); }
+
+    .img-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to right, transparent 60%, var(--carbon));
+      pointer-events: none;
+    }
+
+    .card-body {
+      flex: 1; padding: 14px 16px 14px 12px;
+      display: flex; flex-direction: column; justify-content: space-between; min-width: 0;
+    }
+
+    .car-brand { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 2px; color: var(--white); line-height: 1; }
+
+    .car-meta { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
+    .car-location {
+      font-size: 12px; font-weight: 400; color: var(--muted);
+      display: flex; align-items: center; gap: 5px; letter-spacing: 0.3px;
+    }
+    .car-location svg { flex-shrink: 0; }
+
+    .car-plate {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--dark); border: 1px solid var(--border);
+      border-radius: 6px; padding: 4px 10px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 16px; letter-spacing: 3px; color: var(--white);
+      width: fit-content; margin-top: 6px;
+    }
+    .plate-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+
+    .card-arrow {
+      position: absolute; right: 14px; bottom: 14px;
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted); font-size: 12px; transition: all 0.2s;
+    }
+    .car-card:hover .card-arrow { border-color: var(--gold); color: var(--gold); background: var(--gold-dim); }
+
+    /* ── BOTTOM NAV ── */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+      height: 76px;
+      background: rgba(10,10,10,0.97);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-around;
+      padding: 0 8px; padding-bottom: env(safe-area-inset-bottom);
+    }
+    .bnav-item {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      background: none; border: none; cursor: pointer;
+      padding: 8px 18px; border-radius: 12px; transition: all 0.2s;
+      color: var(--muted); text-decoration: none;
+    }
+    .bnav-item:hover { color: var(--white); }
+    .bnav-item.active { color: var(--gold); }
+    .bnav-label { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 400; letter-spacing: 1.5px; text-transform: uppercase; }
+    .bnav-item.active .bnav-icon { background: var(--gold-dim); border-radius: 8px; padding: 4px 12px; }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.9);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s; backdrop-filter: blur(4px);
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 201;
+      background: var(--carbon); border-radius: 20px 20px 0 0;
+      border-top: 1px solid var(--border);
+      transform: translateY(100%);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      max-height: 92vh; overflow-y: auto;
+    }
+    .modal.open { transform: translateY(0); }
+
+    .modal-handle {
+      width: 40px; height: 4px; border-radius: 2px;
+      background: rgba(255,255,255,0.15);
+      margin: 12px auto 0;
+    }
+
+    .modal-img {
+      width: 100%; height: 220px;
+      object-fit: cover;
+      filter: brightness(0.9) contrast(1.05);
+    }
+
+    .modal-body { padding: 20px 20px 40px; }
+
+    .modal-brand {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 44px; letter-spacing: 4px; color: var(--white); line-height: 1;
+    }
+    .modal-sub {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px; letter-spacing: 4px; text-transform: uppercase;
+      color: var(--gold); margin-top: 4px;
+    }
+
+    /* ── ID CARD ── */
+    .id-card-section {
+      margin-top: 24px;
+    }
+    .id-card-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
+      color: var(--muted);
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 14px;
+    }
+    .id-card-label::before, .id-card-label::after {
+      content: ''; flex: 1; height: 1px;
+      background: var(--border);
+    }
+
+    .id-card {
+      background: linear-gradient(135deg, #141414 0%, #1c1c1c 50%, #131313 100%);
+      border: 1px solid rgba(201,168,76,0.3);
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(201,168,76,0.1);
+    }
+
+    /* Holographic shimmer line */
+    .id-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), var(--gold-light), var(--gold), transparent);
+      opacity: 0.8;
+    }
+
+    /* Watermark */
+    .id-card::after {
+      content: 'CHB';
+      position: absolute; right: -10px; bottom: -18px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 100px; letter-spacing: 8px;
+      color: rgba(201,168,76,0.04);
+      pointer-events: none; line-height: 1; user-select: none;
+    }
+
+    .id-card-top {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 18px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .id-card-org {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .id-card-hex {
+      width: 30px; height: 30px;
+      background: var(--gold);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 11px; color: var(--black);
+      flex-shrink: 0;
+    }
+    .id-card-org-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 15px; letter-spacing: 3px; color: var(--white);
+    }
+    .id-card-org-text span { color: var(--gold); }
+
+    .id-card-type {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--gold);
+      background: rgba(201,168,76,0.1);
+      border: 1px solid rgba(201,168,76,0.2);
+      padding: 3px 8px; border-radius: 4px;
+    }
+
+    .id-card-main {
+      display: flex; gap: 0;
+      padding: 16px 18px;
+    }
+
+    .id-card-photo {
+      width: 80px; min-width: 80px; height: 80px;
+      border-radius: 10px; overflow: hidden;
+      border: 1px solid rgba(201,168,76,0.2);
+      flex-shrink: 0; margin-right: 16px;
+    }
+    .id-card-photo img {
+      width: 100%; height: 100%; object-fit: cover;
+      filter: brightness(0.85) contrast(1.1) saturate(0.8);
+    }
+
+    .id-card-info {
+      flex: 1; display: flex; flex-direction: column; justify-content: space-between; min-width: 0;
+    }
+
+    .id-field { margin-bottom: 8px; }
+    .id-field:last-child { margin-bottom: 0; }
+    .id-field-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 1px;
+    }
+    .id-field-value {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px; letter-spacing: 2px; color: var(--white); line-height: 1.1;
+    }
+    .id-field-value.small {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 13px; font-weight: 600; letter-spacing: 0.3px;
+    }
+
+    .id-card-bottom {
+      padding: 10px 18px 14px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid rgba(255,255,255,0.04);
+    }
+
+    /* Barcode */
+    .id-barcode {
+      display: flex; align-items: flex-end; gap: 1.5px; height: 28px;
+    }
+    .id-barcode span {
+      background: rgba(201,168,76,0.5);
+      border-radius: 1px;
+      width: 2px;
+    }
+
+    .id-card-id {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+      color: rgba(201,168,76,0.4);
+    }
+
+    /* Plate strip at bottom of id card */
+    .id-plate-strip {
+      background: rgba(0,0,0,0.3);
+      border-top: 1px solid rgba(201,168,76,0.15);
+      padding: 8px 18px;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .id-plate-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px; letter-spacing: 6px; color: var(--white);
+    }
+    .id-plate-flag {
+      font-size: 14px; opacity: 0.7;
+    }
+
+    /* ── MODAL STATS ── */
+    .modal-stats {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 12px; margin-top: 20px;
+    }
+    .stat-box {
+      background: var(--dark); border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px;
+    }
+    .stat-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 4px;
+    }
+    .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 2px; color: var(--white); }
+
+    .modal-close {
+      position: absolute; top: 16px; right: 16px;
+      width: 36px; height: 36px;
+      background: rgba(255,255,255,0.1);
+      border: none; border-radius: 50%;
+      color: var(--white); font-size: 18px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.2); }
+
+    /* ── EMPTY STATE ── */
+    .empty-state { text-align: center; padding: 60px 24px; display: none; }
+    .empty-state.show { display: block; }
+    .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.3; }
+    .empty-text { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
+
+    img { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; pointer-events: none; }
+    .car-card { pointer-events: all; }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.2); border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <a class="logo" href="#">
+      <div class="logo-icon">C</div>
+      <span class="logo-text">CAR<span>HOLIC</span>BAKU</span>
+    </a>
+    <nav>
+      <button class="nav-btn" onclick="openSearch()" title="Axtar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+      </button>
+      <button class="nav-btn" title="Profil">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+        </svg>
+      </button>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-stripe"></div>
+    <div class="hero-content">
+      <div class="hero-label">Bakı · Azerbaijan</div>
+      <div class="hero-title">CAR IS A<br><span>LIFESTYLE</span></div>
+      <div class="hero-sub">Exotic Spots · Rare Plates</div>
+    </div>
+  </section>
+
+  <!-- MAIN CONTENT -->
+  <main>
+    <div class="search-wrap" id="searchSection">
+      <div class="search-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Marka, yer və ya nömrə axtar..." oninput="filterCars()" />
+      </div>
+    </div>
+
+    <div class="filters">
+      <button class="filter-tab active" onclick="setFilter('all', this)">Hamısı</button>
+      <button class="filter-tab" onclick="setFilter('porsche', this)">Porsche</button>
+      <button class="filter-tab" onclick="setFilter('bugatti', this)">Bugatti</button>
+      <button class="filter-tab" onclick="setFilter('baki', this)">Bakı</button>
+    </div>
+
+    <div class="section-head">
+      <span class="section-title">Son görüşlər</span>
+      <span class="section-count" id="carCount">3 avtomobil</span>
+    </div>
+
+    <div class="cars-grid" id="carsGrid">
+
+      <div class="car-card featured" data-brand="porsche" data-location="Bakı" data-plate="77-GG-911"
+           onclick="openModal('Porsche', 'img/CHB911.jpg', 'Bakı', '77-GG-911', 'Porsche 911', '2024-03-01', '#001')">
+        <div class="card-inner">
+          <div class="img-wrap">
+            <img src="img/CHB911.jpg" alt="Porsche 911" onerror="this.src='https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=400&q=80'" />
+            <div class="img-overlay"></div>
+          </div>
+          <div class="card-body">
+            <div>
+              <div class="car-brand">Porsche</div>
+              <div class="car-meta">
+                <div class="car-location">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                  </svg>
+                  Bakı
+                </div>
+              </div>
+            </div>
+            <div class="car-plate"><span class="plate-dot"></span>77-GG-911</div>
+          </div>
+        </div>
+        <div class="card-arrow">›</div>
+      </div>
+
+      <div class="car-card" data-brand="bugatti" data-location="Nazar Holdings" data-plate="77-UU-777"
+           onclick="openModal('Bugatti', 'img/CHB777.jpg', 'Nazar Holdings', '77-UU-777', 'Bugatti', '2024-03-04', '#002')">
+        <div class="card-inner">
+          <div class="img-wrap">
+            <img src="img/CHB777.jpg" alt="Bugatti" onerror="this.src='https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=400&q=80'" />
+            <div class="img-overlay"></div>
+          </div>
+          <div class="card-body">
+            <div>
+              <div class="car-brand">Bugatti</div>
+              <div class="car-meta">
+                <div class="car-location">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                  </svg>
+                  Nazar Holdings
+                </div>
+              </div>
+            </div>
+            <div class="car-plate"><span class="plate-dot"></span>77-UU-777</div>
+          </div>
+        </div>
+        <div class="card-arrow">›</div>
+      </div>
+
+      <div class="car-card" data-brand="porsche" data-location="Sahil Metro" data-plate="99-ZZ-200"
+           onclick="openModal('Porsche', 'img/CHB911P2.jpg', 'Sahil Metro Stansiyası', '99-ZZ-200', 'Porsche', '2024-03-06', '#003')">
+        <div class="card-inner">
+          <div class="img-wrap">
+            <img src="img/CHB911P2.jpg" alt="Porsche" onerror="this.src='https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&q=80'" />
+            <div class="img-overlay"></div>
+          </div>
+          <div class="card-body">
+            <div>
+              <div class="car-brand">Porsche</div>
+              <div class="car-meta">
+                <div class="car-location">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                  </svg>
+                  Sahil Metro Stansiyası
+                </div>
+              </div>
+            </div>
+            <div class="car-plate"><span class="plate-dot"></span>99-ZZ-200</div>
+          </div>
+        </div>
+        <div class="card-arrow">›</div>
+      </div>
+
+    </div>
+
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">🚗</div>
+      <div class="empty-text">Nəticə tapılmadı</div>
+    </div>
+  </main>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <a class="bnav-item active" href="#">
+      <div class="bnav-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+      </div>
+      <span class="bnav-label">Ana Səhifə</span>
+    </a>
+    <a class="bnav-item" href="#" onclick="openSearch(); return false;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <span class="bnav-label">Axtar</span>
+    </a>
+    <a class="bnav-item" href="#">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+      </svg>
+      <span class="bnav-label">Profil</span>
+    </a>
+    <a class="bnav-item" href="https://www.instagram.com" target="_blank">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+        <circle cx="12" cy="12" r="4"/>
+        <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+      </svg>
+      <span class="bnav-label">Instagram</span>
+    </a>
+  </nav>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModal()"></div>
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-handle"></div>
+    <img class="modal-img" id="modalImg" src="" alt="" />
+    <div class="modal-body">
+      <div class="modal-brand" id="modalBrand"></div>
+      <div class="modal-sub" id="modalSub"></div>
+
+      <!-- ID CARD -->
+      <div class="id-card-section">
+        <div class="id-card-label">Kimlik Kartı</div>
+        <div class="id-card">
+          <div class="id-card-top">
+            <div class="id-card-org">
+              <div class="id-card-hex">C</div>
+              <div class="id-card-org-text">CAR<span>HOLIC</span>BAKU</div>
+            </div>
+            <div class="id-card-type">EXOTIC SPOT</div>
+          </div>
+
+          <div class="id-card-main">
+            <div class="id-card-photo">
+              <img id="idCardPhoto" src="" alt="" onerror="this.parentElement.style.display='none'" />
+            </div>
+            <div class="id-card-info">
+              <div class="id-field">
+                <div class="id-field-label">Marka</div>
+                <div class="id-field-value" id="idBrand"></div>
+              </div>
+              <div class="id-field">
+                <div class="id-field-label">Məkan</div>
+                <div class="id-field-value small" id="idLocation"></div>
+              </div>
+              <div class="id-field">
+                <div class="id-field-label">Tarix</div>
+                <div class="id-field-value small" id="idDate"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="id-plate-strip">
+            <span class="id-plate-flag">🇦🇿</span>
+            <span class="id-plate-num" id="idPlate"></span>
+            <span class="id-plate-flag">🇦🇿</span>
+          </div>
+
+          <div class="id-card-bottom">
+            <div class="id-barcode" id="idBarcode"></div>
+            <div class="id-card-id" id="idCardId">CHB · 2024</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let activeFilter = 'all';
+
+    // Generate random barcode bars
+    function generateBarcode() {
+      const container = document.getElementById('idBarcode');
+      container.innerHTML = '';
+      const heights = [14,8,18,10,22,6,16,10,20,8,14,18,6,22,10,16,8,20,12,18,6,14,22,10,16];
+      heights.forEach(h => {
+        const bar = document.createElement('span');
+        bar.style.height = h + 'px';
+        container.appendChild(bar);
+      });
+    }
+
+    function openSearch() {
+      const el = document.getElementById('searchSection');
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setTimeout(() => document.getElementById('searchInput').focus(), 400);
+    }
+
+    function setFilter(filter, btn) {
+      activeFilter = filter;
+      document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      filterCars();
+    }
+
+    function filterCars() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const cards = document.querySelectorAll('.car-card');
+      let visible = 0;
+
+      cards.forEach(card => {
+        const brand = card.dataset.brand || '';
+        const location = card.dataset.location || '';
+        const plate = card.dataset.plate || '';
+        const text = (brand + location + plate).toLowerCase();
+
+        const matchFilter = activeFilter === 'all' || brand.includes(activeFilter) || location.toLowerCase().includes(activeFilter);
+        const matchSearch = text.includes(query);
+
+        if (matchFilter && matchSearch) {
+          card.style.display = '';
+          visible++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      document.getElementById('carCount').textContent = visible + ' avtomobil';
+      const empty = document.getElementById('emptyState');
+      empty.classList.toggle('show', visible === 0);
+    }
+
+    function openModal(brand, img, location, plate, sub, date, cardId) {
+      const fallbacks = {
+        'Porsche': 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&q=80',
+        'Bugatti': 'https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=800&q=80'
+      };
+
+      // Main modal image
+      const modalImgEl = document.getElementById('modalImg');
+      modalImgEl.src = img;
+      modalImgEl.onerror = function() { this.src = fallbacks[brand] || fallbacks['Porsche']; };
+
+      document.getElementById('modalBrand').textContent = brand;
+      document.getElementById('modalSub').textContent = sub + ' · Bakı';
+
+      // ID Card fields
+      const idPhotoEl = document.getElementById('idCardPhoto');
+      idPhotoEl.src = img;
+      idPhotoEl.onerror = function() { this.src = fallbacks[brand] || fallbacks['Porsche']; };
+      idPhotoEl.parentElement.style.display = '';
+
+      document.getElementById('idBrand').textContent = brand;
+      document.getElementById('idLocation').textContent = location;
+      document.getElementById('idPlate').textContent = plate;
+
+      // Format date nicely
+      if (date) {
+        const d = new Date(date);
+        const months = ['Yan','Fev','Mar','Apr','May','İyn','İyl','Avq','Sep','Okt','Noy','Dek'];
+        document.getElementById('idDate').textContent = d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+      }
+
+      document.getElementById('idCardId').textContent = 'CHB ' + (cardId || '') + ' · 2024';
+
+      generateBarcode();
+
+      document.getElementById('modalOverlay').classList.add('open');
+      document.getElementById('modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('open');
+      document.getElementById('modal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('contextmenu', e => {
+      if (e.target.tagName === 'IMG') e.preventDefault();
+    });
+
+    document.querySelectorAll('.bnav-item').forEach(item => {
+      item.addEventListener('click', function() {
+        document.querySelectorAll('.bnav-item').forEach(i => i.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+  </script>
+</body>
+  </html>
