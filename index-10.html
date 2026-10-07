@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1b2a41">
+<title>NFC Kart Okuyucu</title>
+<style>
+  :root {
+    --bg: #f2efe8;
+    --ink: #1b2a41;
+    --muted: #5d6b7e;
+    --card: #ffffff;
+    --accent: #1f6feb;
+    --ok: #1d8a5b;
+    --err: #c0392b;
+    --line: #d9d4c7;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 20px 16px 40px;
+  }
+  main { width: 100%; max-width: 520px; }
+  h1 { font-size: 1.5rem; margin: 8px 0 4px; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); margin: 0 0 20px; font-size: .95rem; line-height: 1.4; }
+
+  /* Okuyucu alanı */
+  .reader {
+    background: var(--ink);
+    color: #fff;
+    border-radius: 20px;
+    padding: 28px 20px;
+    text-align: center;
+  }
+  .pulse {
+    width: 96px; height: 96px; margin: 0 auto 16px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    background: rgba(255,255,255,.08);
+    position: relative;
+  }
+  .pulse svg { width: 44px; height: 44px; stroke: #fff; fill: none; stroke-width: 1.8; stroke-linecap: round; }
+  .reader.scanning .pulse::before,
+  .reader.scanning .pulse::after {
+    content: ""; position: absolute; inset: 0; border-radius: 50%;
+    border: 2px solid #6fb1ff; opacity: 0;
+    animation: ring 1.8s ease-out infinite;
+  }
+  .reader.scanning .pulse::after { animation-delay: .9s; }
+  @keyframes ring { 0% { transform: scale(1); opacity: .8; } 100% { transform: scale(1.8); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .reader.scanning .pulse::before, .reader.scanning .pulse::after { animation: none; opacity: .5; }
+  }
+  #status { font-size: 1.05rem; margin: 0 0 18px; min-height: 1.4em; }
+  button {
+    font: inherit; font-weight: 600;
+    border: 0; border-radius: 12px;
+    padding: 14px 24px; width: 100%;
+    background: var(--accent); color: #fff;
+    cursor: pointer;
+  }
+  button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+  button:disabled { opacity: .6; cursor: default; }
+  button.secondary { background: transparent; border: 1px solid var(--line); color: var(--ink); padding: 10px 16px; width: auto; font-weight: 500; font-size: .9rem; }
+
+  .warn {
+    background: #fff3d6; border: 1px solid #ecd28b; color: #5a4300;
+    border-radius: 12px; padding: 12px 14px; margin-bottom: 16px; font-size: .92rem; line-height: 1.45;
+  }
+  .hidden { display: none; }
+
+  /* Sonuç */
+  h2 { font-size: 1.1rem; margin: 28px 0 10px; display: flex; justify-content: space-between; align-items: center; }
+  .empty { color: var(--muted); border: 1px dashed var(--line); border-radius: 14px; padding: 18px; text-align: center; font-size: .95rem; }
+  .result {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 16px; margin-bottom: 12px;
+  }
+  .result.new { border-color: var(--ok); box-shadow: 0 0 0 3px rgba(29,138,91,.15); }
+  .meta { color: var(--muted); font-size: .85rem; margin-bottom: 10px; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .serial { font-family: ui-monospace, Menlo, Consolas, monospace; }
+  .rec { border-top: 1px solid var(--line); padding-top: 10px; margin-top: 10px; }
+  .rec:first-of-type { border-top: 0; padding-top: 0; margin-top: 0; }
+  .rec .type { font-size: .8rem; color: var(--muted); margin-bottom: 4px; }
+  .rec .value { font-size: 1.15rem; word-break: break-word; white-space: pre-wrap; }
+  .rec a { color: var(--accent); }
+  pre { margin: 6px 0 0; background: #f6f4ee; padding: 10px; border-radius: 8px; font-size: .8rem; overflow-x: auto; }
+  .note { color: var(--muted); font-size: .85rem; line-height: 1.5; margin-top: 24px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>NFC Kart Okuyucu</h1>
+  <p class="sub">Okumayı başlat, sonra kartı telefonun arka tarafına yaklaştır.</p>
+
+  <div id="unsupported" class="warn hidden"></div>
+
+  <section class="reader" id="reader" aria-live="polite">
+    <div class="pulse" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M6 8.5a6 6 0 0 1 0 7"/><path d="M10 6a10 10 0 0 1 0 12"/><path d="M14 3.5a14 14 0 0 1 0 17"/></svg>
+    </div>
+    <p id="status">Hazır</p>
+    <button id="scanBtn">Okumayı başlat</button>
+  </section>
+
+  <h2>
+    <span>Okunan kartlar</span>
+    <button class="secondary" id="clearBtn" type="button">Temizle</button>
+  </h2>
+  <div id="results">
+    <div class="empty" id="empty">Henüz kart okunmadı.</div>
+  </div>
+
+  <p class="note">
+    Not: Bu sayfa yalnızca NDEF biçimli etiketlerdeki veriyi okuyabilir. Kartın seri numarası her zaman gösterilir;
+    kartın içinde NDEF verisi yoksa (ör. bazı şifreli veya Mifare Classic kartlar) sadece seri numarası görünür.
+  </p>
+</main>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const reader = $("reader");
+  const statusEl = $("status");
+  const scanBtn = $("scanBtn");
+  const results = $("results");
+  const emptyEl = $("empty");
+  let ndef = null;
+  let controller = null;
+  let scanning = false;
+
+  // --- Destek kontrolü ---
+  function showUnsupported(msg) {
+    const box = $("unsupported");
+    box.innerHTML = msg;
+    box.classList.remove("hidden");
+    scanBtn.disabled = true;
+    statusEl.textContent = "Bu cihazda kullanılamıyor";
+  }
+
+  if (!("NDEFReader" in window)) {
+    showUnsupported(
+      "<b>Web NFC desteklenmiyor.</b> Bu özellik sadece <b>Android</b> telefonlarda <b>Chrome</b> ile çalışır " +
+      "(iPhone ve bilgisayar Chrome'u desteklemez). Ayrıca telefonda NFC'nin açık olması gerekir."
+    );
+  } else if (!window.isSecureContext) {
+    showUnsupported(
+      "<b>Güvenli bağlantı gerekli.</b> Web NFC sadece HTTPS (veya localhost) üzerinde çalışır. " +
+      "Siteyi GitHub Pages gibi bir HTTPS adresine yükleyip öyle aç."
+    );
+  }
+
+  // --- Yardımcılar ---
+  function setStatus(text) { statusEl.textContent = text; }
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  function bytesToHex(buf) {
+    return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join(" ");
+  }
+
+  function decodeRecord(rec) {
+    const type = rec.recordType;
+    const out = { type, mediaType: rec.mediaType || "", html: "", raw: "" };
+    const dv = rec.data;
+
+    const decodeText = () => {
+      const enc = rec.encoding || "utf-8";
+      try { return new TextDecoder(enc).decode(dv); } catch (e) { return new TextDecoder("utf-8").decode(dv); }
+    };
+
+    if (type === "text") {
+      const t = decodeText();
+      out.html = esc(t);
+      out.label = "Metin" + (rec.lang ? " (" + rec.lang + ")" : "");
+    } else if (type === "url" || type === "absolute-url") {
+      const u = decodeText();
+      const safe = /^(https?:|tel:|mailto:)/i.test(u);
+      out.html = safe ? '<a href="' + esc(u) + '" target="_blank" rel="noopener">' + esc(u) + "</a>" : esc(u);
+      out.label = "Bağlantı";
+    } else if (type === "mime") {
+      const t = decodeText();
+      out.label = "Veri (" + (rec.mediaType || "mime") + ")";
+      if ((rec.mediaType || "").includes("json")) {
+        try { out.html = "<pre>" + esc(JSON.stringify(JSON.parse(t), null, 2)) + "</pre>"; }
+        catch (e) { out.html = esc(t); }
+      } else {
+        out.html = esc(t);
+      }
+    } else if (type === "empty") {
+      out.label = "Boş kayıt";
+      out.html = "<span style='color:var(--muted)'>Bu kayıt boş.</span>";
+    } else {
+      out.label = "Kayıt türü: " + type;
+      out.html = '<span class="serial">' + esc(bytesToHex(dv.buffer)) + "</span>";
+    }
+    return out;
+  }
+
+  function addResult(serial, records) {
+    emptyEl.classList.add("hidden");
+    results.querySelectorAll(".result.new").forEach((el) => el.classList.remove("new"));
+
+    const card = document.createElement("div");
+    card.className = "result new";
+
+    const time = new Date().toLocaleTimeString("tr-TR");
+    let html = '<div class="meta"><span>Seri no: <span class="serial">' + esc(serial || "okunamadı") + "</span></span><span>" + time + "</span></div>";
+
+    if (!records.length) {
+      html += '<div class="rec"><div class="value" style="font-size:1rem">Kartta okunabilir NDEF verisi yok. Sadece seri numarası okundu.</div></div>';
+    } else {
+      records.forEach((r) => {
+        const d = decodeRecord(r);
+        html += '<div class="rec"><div class="type">' + esc(d.label) + '</div><div class="value">' + d.html + "</div></div>";
+      });
+    }
+    card.innerHTML = html;
+    results.insertBefore(card, results.firstChild);
+  }
+
+  // --- Okuma ---
+  async function startScan() {
+    if (scanning) { stopScan(); return; }
+    try {
+      ndef = new NDEFReader();
+      controller = new AbortController();
+
+      ndef.onreadingerror = () => {
+        setStatus("Kart okunamadı. Tekrar yaklaştır.");
+        reader.classList.remove("scanning");
+        setTimeout(() => { if (scanning) { reader.classList.add("scanning"); setStatus("Kartı telefonun arkasına yaklaştır…"); } }, 1800);
+      };
+
+      ndef.onreading = (event) => {
+        if (navigator.vibrate) navigator.vibrate(80);
+        setStatus("Kart okundu ✓");
+        addResult(event.serialNumber, Array.from(event.message.records));
+        setTimeout(() => { if (scanning) setStatus("Başka bir kart yaklaştırabilirsin"); }, 1800);
+      };
+
+      await ndef.scan({ signal: controller.signal });
+      scanning = true;
+      reader.classList.add("scanning");
+      scanBtn.textContent = "Okumayı durdur";
+      setStatus("Kartı telefonun arkasına yaklaştır…");
+    } catch (err) {
+      scanning = false;
+      reader.classList.remove("scanning");
+      scanBtn.textContent = "Okumayı başlat";
+      if (err.name === "NotAllowedError") {
+        setStatus("NFC izni verilmedi. Tarayıcı izinlerini kontrol et.");
+      } else if (err.name === "NotSupportedError") {
+        setStatus("NFC kapalı veya desteklenmiyor. Telefon ayarlarından NFC'yi aç.");
+      } else {
+        setStatus("Hata: " + err.message);
+      }
+    }
+  }
+
+  function stopScan() {
+    if (controller) controller.abort();
+    scanning = false;
+    reader.classList.remove("scanning");
+    scanBtn.textContent = "Okumayı başlat";
+    setStatus("Durduruldu");
+  }
+
+  scanBtn.addEventListener("click", startScan);
+
+  $("clearBtn").addEventListener("click", () => {
+    results.querySelectorAll(".result").forEach((el) => el.remove());
+    emptyEl.classList.remove("hidden");
+  });
+})();
+</script>
+</body>
+</html>
