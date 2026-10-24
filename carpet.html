@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Carpet League — 3D Kubok</title>
+<style>
+:root{color-scheme:dark;--gold:#d7ad68;--muted:#a9a29a}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0b0b0c;color:#f4eee4;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+#scene{position:fixed;inset:0}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+.hud{position:fixed;z-index:2;pointer-events:none}
+.brand{left:clamp(18px,4vw,56px);top:clamp(18px,4vw,44px)}
+.kicker{font-size:10px;letter-spacing:.34em;color:var(--gold);text-transform:uppercase}
+h1{font-size:clamp(23px,3.2vw,42px);line-height:1.03;letter-spacing:.1em;margin:10px 0 8px;font-weight:650}
+.subtitle{color:#b9b0a3;font-size:12px;letter-spacing:.08em}
+.badge{right:clamp(16px,3vw,38px);top:clamp(18px,4vw,42px);text-align:right;color:#c9c0b4;font-size:10px;letter-spacing:.16em;line-height:1.8}
+.badge strong{color:var(--gold);font-weight:500}
+.footer{left:clamp(18px,4vw,48px);bottom:clamp(18px,4vw,36px);max-width:290px}
+.footer .line{width:46px;height:1px;background:var(--gold);margin-bottom:12px}
+.footer p{margin:0;color:#b7afa4;font-size:11px;line-height:1.7;letter-spacing:.04em}
+.controls{position:fixed;z-index:3;bottom:clamp(18px,4vw,36px);right:clamp(16px,3vw,38px);display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;max-width:60vw}
+button{appearance:none;border:1px solid #554735;background:rgba(18,17,16,.78);color:#e9dfd0;padding:11px 13px;border-radius:2px;font-size:10px;letter-spacing:.13em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(8px)}
+button:hover,button:focus-visible{border-color:var(--gold);outline:none}
+button.active{background:#b88b4a;color:#15110c;border-color:#b88b4a}
+.hint{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);font-size:10px;color:#a69c8e;letter-spacing:.1em;pointer-events:none;white-space:nowrap}
+.loading{position:fixed;inset:0;display:grid;place-items:center;background:#0b0b0c;z-index:10;color:var(--gold);letter-spacing:.25em;font-size:11px;transition:opacity .5s}
+.loading.hide{opacity:0;pointer-events:none}
+@media(max-width:650px){
+ .badge{top:18px;font-size:8px}.brand{top:22px}.subtitle{max-width:220px;line-height:1.5}
+ .footer{bottom:82px;max-width:220px}.footer p{font-size:10px}
+ .controls{bottom:18px;left:14px;right:14px;max-width:none;justify-content:center}
+ button{padding:10px 11px;font-size:9px}
+ .hint{display:none}
+}
+</style>
+</head>
+<body>
+<div id="scene"></div>
+<div class="loading" id="loading">CARPET LEAGUE · 3D MODEL</div>
+<div class="hud brand">
+  <div class="kicker">Districts • Football • Unity</div>
+  <h1>CARPET<br>LEAGUE</h1>
+  <div class="subtitle">DISTLAR ARASI FUTBOL LİQASI</div>
+</div>
+<div class="hud badge"><strong>360°</strong><br>INTERAKTİV MODEL<br><span style="color:#746b60">CONCEPT · 001</span></div>
+<div class="hud footer"><div class="line"></div><p>Milli xalça naxışlarından ilhamlanan kubok. Modeli fırlat, yaxınlaşdır və bütün bucaqlardan araşdır.</p></div>
+<div class="controls">
+  <button id="spin" class="active">Avtomatik fırlanma</button>
+  <button id="front">Ön görünüş</button>
+  <button id="back">Arxa görünüş</button>
+  <button id="reset">Sıfırla</button>
+</div>
+<div class="hint">SÜRÜŞDÜR: FIRLAT · SCROLL / PINCH: YAXINLAŞDIR</div>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js';
+import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/controls/OrbitControls.js';
+
+const host=document.getElementById('scene');
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x0b0b0c);
+scene.fog=new THREE.Fog(0x0b0b0c,10,22);
+const camera=new THREE.PerspectiveCamera(34,innerWidth/innerHeight,.1,100);
+camera.position.set(6.5,5.0,9.5);
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.18;
+host.appendChild(renderer.domElement);
+const controls=new OrbitControls(camera,renderer.domElement);
+controls.target.set(0,2.35,0);controls.enableDamping=true;controls.dampingFactor=.06;
+controls.minDistance=4.5;controls.maxDistance=15;controls.maxPolarAngle=Math.PI*.88;
+controls.autoRotate=true;controls.autoRotateSpeed=1.15;
+
+scene.add(new THREE.HemisphereLight(0xb9c5dc,0x28160b,2.0));
+const key=new THREE.DirectionalLight(0xffd7a0,4.2);key.position.set(5,8,6);key.castShadow=true;key.shadow.mapSize.set(2048,2048);scene.add(key);
+const rim=new THREE.DirectionalLight(0x9e2832,2.4);rim.position.set(-5,4,-5);scene.add(rim);
+const fill=new THREE.PointLight(0xffbd62,45,12);fill.position.set(-3,2,4);scene.add(fill);
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(200,200),new THREE.MeshStandardMaterial({color:0x111112,roughness:.34,metalness:.25}));
+floor.rotation.x=-Math.PI/2;floor.position.y=-.035;floor.receiveShadow=true;scene.add(floor);
+
+function mat(color,metalness=0,roughness=.4){return new THREE.MeshStandardMaterial({color,metalness,roughness});}
+const gold=mat(0xc99a50,.82,.24), paleGold=mat(0xf1d49a,.75,.2), darkGold=mat(0x77502b,.8,.32), blackStone=mat(0x171719,.35,.26), ballBlack=mat(0x171719,.55,.26);
+
+// Create a woven carpet texture with a repeating geometric medallion.
+function carpetTexture(){
+ const c=document.createElement('canvas');c.width=512;c.height=1024;const x=c.getContext('2d');
+ x.fillStyle='#14202a';x.fillRect(0,0,512,1024);
+ // tiny woven grain
+ for(let y=0;y<1024;y+=3){x.fillStyle=y%6?'rgba(214,166,103,.10)':'rgba(0,0,0,.18)';x.fillRect(0,y,512,1)}
+ const tile=(cx,cy,s)=>{
+  x.save();x.translate(cx,cy);
+  x.strokeStyle='#c99b59';x.lineWidth=5;x.fillStyle='#8f2c2b';
+  x.beginPath();x.moveTo(0,-s);x.lineTo(s*.7,0);x.lineTo(0,s);x.lineTo(-s*.7,0);x.closePath();x.fill();x.stroke();
+  x.strokeStyle='#f0d29b';x.lineWidth=2.5;x.beginPath();x.moveTo(0,-s*.72);x.lineTo(s*.5,0);x.lineTo(0,s*.72);x.lineTo(-s*.5,0);x.closePath();x.stroke();
+  x.fillStyle='#e7c47d';x.beginPath();x.moveTo(0,-s*.26);x.lineTo(s*.22,0);x.lineTo(0,s*.26);x.lineTo(-s*.22,0);x.closePath();x.fill();
+  for(let i=0;i<4;i++){x.save();x.rotate(i*Math.PI/2);x.fillStyle='#d9b878';x.beginPath();x.moveTo(0,-s*.42);x.lineTo(s*.12,-s*.23);x.lineTo(0,-s*.08);x.lineTo(-s*.12,-s*.23);x.closePath();x.fill();x.restore()}
+  x.restore();
+ };
+ // border bands
+ for(let i=0;i<3;i++){x.strokeStyle=i===1?'#c99b59':'#a13c32';x.lineWidth=i===1?7:3;x.strokeRect(15+i*13,15+i*13,482-i*26,994-i*26)}
+ for(let y=55;y<1024;y+=128){tile(256,y,42);tile(55,y+64,24);tile(457,y+64,24)}
+ for(let y=0;y<1024;y+=32){x.fillStyle='#e5c38a';x.fillRect(25,y,5,13);x.fillRect(482,y+12,5,13)}
+ const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.wrapS=THREE.RepeatWrapping;t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;return t;
+}
+const rugTex=carpetTexture();
+const rugMat=new THREE.MeshStandardMaterial({map:rugTex,roughness:.78,metalness:.04,side:THREE.DoubleSide});
+const group=new THREE.Group();scene.add(group);
+
+// Base: tapered, bevelled dark stone pedestal.
+function makeCylinder(rt,rb,h,material,y,radial=8){
+ const mesh=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,radial,1,false),material);
+ mesh.position.y=y;mesh.castShadow=true;mesh.receiveShadow=true;group.add(mesh);return mesh;
+}
+makeCylinder(.72,.88,.28,blackStone,.16,6);
+makeCylinder(.68,.78,.07,gold,.335,6);
+makeCylinder(.61,.73,.62,blackStone,.67,6);
+makeCylinder(.62,.68,.045,paleGold,1.005,6);
+makeCylinder(.55,.61,.07,darkGold,1.06,6);
+// Gold inlaid base trim lines
+for(let y of [.39,.91]){const tor=new THREE.Mesh(new THREE.TorusGeometry(y===.39?.75:.64,.018,8,6),paleGold);tor.rotation.y=Math.PI/6;tor.position.y=y;group.add(tor);}
+// Decorative front plaque on the base
+const plaque=new THREE.Mesh(new THREE.BoxGeometry(.48,.2,.025),mat(0x08090a,.55,.24));
+plaque.position.set(0,.69,.735);group.add(plaque);
+const plaqueEdge=new THREE.Mesh(new THREE.BoxGeometry(.51,.23,.012),gold);plaqueEdge.position.set(0,.69,.72);group.add(plaqueEdge);plaqueEdge.position.z=.716;plaque.position.z=.737;
+function makeTextTexture(lines){
+ const c=document.createElement('canvas');c.width=512;c.height=180;const x=c.getContext('2d');x.clearRect(0,0,512,180);x.textAlign='center';x.fillStyle='#e0b66f';x.font='bold 37px Arial';x.fillText(lines[0],256,70);x.font='22px Arial';x.fillText(lines[1],256,112);return new THREE.CanvasTexture(c);
+}
+const label=new THREE.Mesh(new THREE.PlaneGeometry(.43,.15),new THREE.MeshBasicMaterial({map:makeTextTexture(['CARPET LEAGUE','CHAMPIONS'],),transparent:true,depthWrite:false}));
+label.position.set(0,.69,.755);group.add(label);
+
+// Twisting, woven-carpet body: a ribbon swept up around the vertical axis.
+const N=260, W=48, height=2.95, bottom=1.13, turns=1.15;
+const positions=[],uvs=[],indices=[];
+for(let i=0;i<=N;i++){
+ const t=i/N, y=bottom+t*height, angle=t*Math.PI*2*turns+.2;
+ const width=.94-.35*Math.sin(Math.PI*t);
+ const radius=.43-.12*Math.sin(Math.PI*t);
+ for(let j=0;j<=W;j++){
+  const u=j/W-.5;
+  const a=angle+u*.08;
+  const r=radius+u*width;
+  positions.push(Math.cos(a)*r,y,Math.sin(a)*r);
+  uvs.push(j/W,t*3.1);
+ }
+}
+for(let i=0;i<N;i++)for(let j=0;j<W;j++){
+ const a=i*(W+1)+j,b=a+W+1;indices.push(a,b,a+1,b,b+1,a+1);
+}
+const ribbonGeo=new THREE.BufferGeometry();ribbonGeo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));ribbonGeo.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));ribbonGeo.setIndex(indices);ribbonGeo.computeVertexNormals();
+const ribbon=new THREE.Mesh(ribbonGeo,rugMat);ribbon.castShadow=true;ribbon.receiveShadow=true;group.add(ribbon);
+
+// Metallic edging follows both long sides of the carpet ribbon.
+for(const side of [-.5,.5]){
+ const pts=[];
+ for(let i=0;i<=N;i++){const t=i/N,angle=t*Math.PI*2*turns+.2+side*.08,width=.94-.35*Math.sin(Math.PI*t),radius=.43-.12*Math.sin(Math.PI*t),r=radius+side*width;pts.push(new THREE.Vector3(Math.cos(angle)*r,bottom+t*height,Math.sin(angle)*r));}
+ const curve=new THREE.CatmullRomCurve3(pts);
+ const edge=new THREE.Mesh(new THREE.TubeGeometry(curve,400,.026,8,false),paleGold);edge.castShadow=true;group.add(edge);
+ const fine=new THREE.Mesh(new THREE.TubeGeometry(curve,400,.008,6,false),darkGold);group.add(fine);
+}
+// Fine fringe tassels around upper rim, creating a fabric edge.
+for(let i=0;i<72;i++){
+ const a=i/72*Math.PI*2, r=.52;
+ const tassel=new THREE.Mesh(new THREE.CylinderGeometry(.008,.003,.105,5),i%3===0?paleGold:gold);
+ tassel.position.set(Math.cos(a)*r,4.02,Math.sin(a)*r);tassel.rotation.z=(Math.random()-.5)*.18;tassel.rotation.x=(Math.random()-.5)*.18;group.add(tassel);
+}
+
+// Ornamental gold football on top.
+const ballY=4.26, ballR=.56;
+const ball=new THREE.Mesh(new THREE.SphereGeometry(ballR,48,32),ballBlack);ball.position.y=ballY;ball.castShadow=true;group.add(ball);
+// Gold pentagon/hexagon-like panel network on sphere using curves.
+function spherePoint(lat,lon,r=ballR*1.003){return new THREE.Vector3(r*Math.cos(lat)*Math.cos(lon),ballY+r*Math.sin(lat),r*Math.cos(lat)*Math.sin(lon));}
+const lineMat=new THREE.MeshStandardMaterial({color:0xd9b16d,metalness:.82,roughness:.28});
+for(let lat=-1.15;lat<=1.16;lat+=.58){
+ const pts=[];for(let k=0;k<=180;k++){const lon=k/180*Math.PI*2;pts.push(spherePoint(lat,lon));}
+ const curve=new THREE.CatmullRomCurve3(pts);group.add(new THREE.Mesh(new THREE.TubeGeometry(curve,180,.009,5,false),lineMat));
+}
+for(let lon=0;lon<Math.PI;lon+=Math.PI/3){
+ const pts=[];for(let k=0;k<=100;k++){const lat=-Math.PI/2+k/100*Math.PI;pts.push(spherePoint(lat,lon));}
+ group.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),100,.009,5,false),lineMat));
+}
+// A central carpet medallion on the ball facing front
+const med=new THREE.Mesh(new THREE.PlaneGeometry(.28,.28),new THREE.MeshBasicMaterial({map:rugTex,transparent:false,side:THREE.DoubleSide}));
+med.position.set(0,ballY,.562);group.add(med);med.rotation.z=Math.PI/4;
+// Small ornamental bands around ball equator
+const equator=new THREE.Mesh(new THREE.TorusGeometry(ballR*1.002,.012,8,64),paleGold);equator.position.y=ballY;equator.rotation.x=Math.PI/2;group.add(equator);
+
+// A few subtle carpet lozenge ornaments around visible ribbon surface, on a front-facing approximate spiral.
+for(let i=0;i<7;i++){
+ const t=.12+i*.115,ang=t*Math.PI*2*turns+.2, r=.43-.12*Math.sin(Math.PI*t)+.02;
+ const ornament=new THREE.Mesh(new THREE.OctahedronGeometry(.07,0),paleGold);
+ ornament.scale.set(.72,1.1,.14);ornament.position.set(Math.cos(ang)*r,bottom+t*height,Math.sin(ang)*r);ornament.rotation.y=-ang;group.add(ornament);
+}
+
+// Small feet/ground contact and discreet floor ring.
+const groundRing=new THREE.Mesh(new THREE.TorusGeometry(1.05,.009,6,96),mat(0x5b4932,.5,.4));groundRing.rotation.x=Math.PI/2;groundRing.position.y=.012;scene.add(groundRing);
+
+function resize(){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);}
+addEventListener('resize',resize);
+const spin=document.getElementById('spin');
+spin.addEventListener('click',()=>{controls.autoRotate=!controls.autoRotate;spin.classList.toggle('active',controls.autoRotate);spin.textContent=controls.autoRotate?'Avtomatik fırlanma':'Avtomatik fırlanma: OFF';});
+document.getElementById('front').addEventListener('click',()=>{camera.position.set(0,3.4,10.5);controls.target.set(0,2.35,0);controls.update();});
+document.getElementById('back').addEventListener('click',()=>{camera.position.set(0,3.4,-10.5);controls.target.set(0,2.35,0);controls.update();});
+document.getElementById('reset').addEventListener('click',()=>{camera.position.set(6.5,5,9.5);controls.target.set(0,2.35,0);controls.autoRotate=true;spin.classList.add('active');spin.textContent='Avtomatik fırlanma';controls.update();});
+function animate(){requestAnimationFrame(animate);controls.update();renderer.render(scene,camera);}
+animate();
+document.getElementById('loading').classList.add('hide');
+setTimeout(()=>document.getElementById('loading')?.remove(),700);
+</script>
+</body>
+  </html>
