@@ -1,214 +1,696 @@
 <!DOCTYPE html>
-<html lang="az">
+<html lang="tr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Carpet League — 3D Kubok</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Carpet League Kupası – 360° 3D Model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-:root{color-scheme:dark;--gold:#d7ad68;--muted:#a9a29a}
-*{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0b0b0c;color:#f4eee4;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
-#scene{position:fixed;inset:0}
-canvas{display:block;width:100%;height:100%;touch-action:none}
-.hud{position:fixed;z-index:2;pointer-events:none}
-.brand{left:clamp(18px,4vw,56px);top:clamp(18px,4vw,44px)}
-.kicker{font-size:10px;letter-spacing:.34em;color:var(--gold);text-transform:uppercase}
-h1{font-size:clamp(23px,3.2vw,42px);line-height:1.03;letter-spacing:.1em;margin:10px 0 8px;font-weight:650}
-.subtitle{color:#b9b0a3;font-size:12px;letter-spacing:.08em}
-.badge{right:clamp(16px,3vw,38px);top:clamp(18px,4vw,42px);text-align:right;color:#c9c0b4;font-size:10px;letter-spacing:.16em;line-height:1.8}
-.badge strong{color:var(--gold);font-weight:500}
-.footer{left:clamp(18px,4vw,48px);bottom:clamp(18px,4vw,36px);max-width:290px}
-.footer .line{width:46px;height:1px;background:var(--gold);margin-bottom:12px}
-.footer p{margin:0;color:#b7afa4;font-size:11px;line-height:1.7;letter-spacing:.04em}
-.controls{position:fixed;z-index:3;bottom:clamp(18px,4vw,36px);right:clamp(16px,3vw,38px);display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;max-width:60vw}
-button{appearance:none;border:1px solid #554735;background:rgba(18,17,16,.78);color:#e9dfd0;padding:11px 13px;border-radius:2px;font-size:10px;letter-spacing:.13em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(8px)}
-button:hover,button:focus-visible{border-color:var(--gold);outline:none}
-button.active{background:#b88b4a;color:#15110c;border-color:#b88b4a}
-.hint{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);font-size:10px;color:#a69c8e;letter-spacing:.1em;pointer-events:none;white-space:nowrap}
-.loading{position:fixed;inset:0;display:grid;place-items:center;background:#0b0b0c;z-index:10;color:var(--gold);letter-spacing:.25em;font-size:11px;transition:opacity .5s}
-.loading.hide{opacity:0;pointer-events:none}
-@media(max-width:650px){
- .badge{top:18px;font-size:8px}.brand{top:22px}.subtitle{max-width:220px;line-height:1.5}
- .footer{bottom:82px;max-width:220px}.footer p{font-size:10px}
- .controls{bottom:18px;left:14px;right:14px;max-width:none;justify-content:center}
- button{padding:10px 11px;font-size:9px}
- .hint{display:none}
-}
+  :root{
+    --bg:#0a0807;
+    --ink:#efe5d0;
+    --dim:#a89c86;
+    --gold:#d4aa4f;
+    --gold-soft:rgba(212,170,79,.32);
+    --red:#a3262a;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);
+    font-family:'Jost','Segoe UI',system-ui,sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased}
+  #stage{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab;outline:none}
+  #stage.drag{cursor:grabbing}
+
+  .brand{position:fixed;top:max(22px,env(safe-area-inset-top));left:26px;display:flex;gap:14px;align-items:center;pointer-events:none}
+  .brand svg{width:44px;height:44px;flex:none}
+  .brand h1{margin:0;font-weight:400;font-size:22px;letter-spacing:.2em;line-height:1.1;color:var(--gold)}
+  .brand p{margin:5px 0 0;font-size:11.5px;letter-spacing:.16em;color:var(--dim);font-weight:300}
+
+  .specs{position:fixed;top:max(24px,env(safe-area-inset-top));right:26px;margin:0;text-align:right;
+    font-size:13px;line-height:1.75;font-weight:300;color:var(--dim);pointer-events:none}
+  .specs b{font-weight:400;color:var(--ink)}
+
+  .hint{position:fixed;left:50%;bottom:132px;transform:translateX(-50%);margin:0;font-size:14px;font-weight:300;
+    color:var(--ink);background:rgba(10,8,7,.72);border:1px solid var(--gold-soft);padding:9px 18px;border-radius:2px;
+    pointer-events:none;transition:opacity .9s ease;text-align:center;max-width:88vw}
+  .hint.gone{opacity:0}
+
+  .dock{position:fixed;left:0;right:0;bottom:0;padding:16px 26px max(18px,env(safe-area-inset-bottom));
+    background:linear-gradient(to top,rgba(10,8,7,.94) 55%,rgba(10,8,7,0));
+    display:grid;gap:14px}
+  .angle{display:flex;align-items:center;gap:16px;max-width:760px;width:100%;margin:0 auto}
+  .angle label{font-size:13px;color:var(--dim);font-weight:300;white-space:nowrap}
+  .angle output{font-size:15px;min-width:3.4ch;text-align:right;font-variant-numeric:tabular-nums;color:var(--gold);font-weight:400}
+  input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:26px;background:transparent;cursor:pointer}
+  input[type=range]::-webkit-slider-runnable-track{height:1px;background:var(--gold-soft)}
+  input[type=range]::-moz-range-track{height:1px;background:var(--gold-soft)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;margin-top:-8px;border-radius:50%;
+    background:var(--gold);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--gold)}
+  input[type=range]::-moz-range-thumb{width:10px;height:10px;border-radius:50%;background:var(--gold);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--gold)}
+
+  .views{display:flex;gap:4px 22px;justify-content:center;flex-wrap:wrap}
+  .views button,.tools button{font:inherit;font-size:14px;font-weight:400;color:var(--dim);background:none;border:0;
+    padding:7px 2px;cursor:pointer;border-bottom:1px solid transparent;transition:color .2s,border-color .2s}
+  .views button:hover,.tools button:hover{color:var(--ink)}
+  .views button.on,.tools button[aria-pressed=true]{color:var(--gold);border-bottom-color:var(--gold)}
+  .tools{display:flex;gap:26px;justify-content:center}
+  button:focus-visible,input:focus-visible,#stage:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
+  #loader{position:fixed;inset:0;background:var(--bg);display:grid;place-items:center;z-index:9;transition:opacity .8s ease}
+  #loader.done{opacity:0;pointer-events:none}
+  #loader div{text-align:center;font-weight:300;color:var(--dim);font-size:15px}
+  #loader svg{width:60px;height:60px;margin-bottom:18px;animation:spin 6s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @media (prefers-reduced-motion:reduce){#loader svg{animation:none}.hint{transition:none}}
+
+  @media (max-width:720px){
+    .brand{left:16px}.brand h1{font-size:17px}.brand svg{width:34px;height:34px}.brand p{font-size:10px}
+    .specs{display:none}
+    .dock{padding-left:14px;padding-right:14px}
+    .views{gap:2px 14px}
+    .views button,.tools button{font-size:13px}
+    .hint{bottom:182px;font-size:13px}
+  }
 </style>
 </head>
 <body>
-<div id="scene"></div>
-<div class="loading" id="loading">CARPET LEAGUE · 3D MODEL</div>
-<div class="hud brand">
-  <div class="kicker">Districts • Football • Unity</div>
-  <h1>CARPET<br>LEAGUE</h1>
-  <div class="subtitle">DISTLAR ARASI FUTBOL LİQASI</div>
+
+<canvas id="stage" tabindex="0" aria-label="Carpet League kupası 3D modeli. Fare veya parmakla sürükleyerek döndürün, ok tuşlarıyla da çevirebilirsiniz."></canvas>
+
+<header class="brand">
+  <svg viewBox="0 0 64 64" fill="none" stroke="#d4aa4f" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true">
+    <path d="M32 4 L60 32 L32 60 L4 32 Z"/>
+    <path d="M32 13 L51 32 L32 51 L13 32 Z"/>
+    <path d="M32 24 L40 32 L32 40 L24 32 Z" fill="#d4aa4f"/>
+    <path d="M32 4v9M60 32h-9M32 60v-9M4 32h9"/>
+  </svg>
+  <div>
+    <h1>CARPET LEAGUE</h1>
+    <p>DISTLAR ARASI FUTBOL LIQASI</p>
+  </div>
+</header>
+
+<dl class="specs" style="margin:0">
+  <div>Yükseklik <b>≈ 45 cm</b></div>
+  <div>Taban genişliği <b>≈ 14 cm</b></div>
+  <div>Halı dokuma gövde, altın şerit, siyah mermer taban</div>
+</dl>
+
+<p class="hint" id="hint">Kupayı sürükleyerek döndürün. Tekerlek ya da iki parmakla yakınlaştırın.</p>
+
+<section class="dock" aria-label="Görünüm denetimleri">
+  <div class="angle">
+    <label for="angle">Dönüş açısı</label>
+    <input id="angle" type="range" min="0" max="360" step="1" value="0">
+    <output id="angleOut" for="angle">0°</output>
+  </div>
+  <div class="views" id="views" role="group" aria-label="Hazır görünümler"></div>
+  <div class="tools">
+    <button id="autoBtn" aria-pressed="true">Otomatik dönüş</button>
+    <button id="wireBtn" aria-pressed="false">Tel kafes</button>
+  </div>
+</section>
+
+<div id="loader" role="status">
+  <div>
+    <svg viewBox="0 0 64 64" fill="none" stroke="#d4aa4f" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true">
+      <path d="M32 4 L60 32 L32 60 L4 32 Z"/><path d="M32 13 L51 32 L32 51 L13 32 Z"/><path d="M32 24 L40 32 L32 40 L24 32 Z" fill="#d4aa4f"/>
+    </svg>
+    <span id="loadMsg">Kupa hazırlanıyor…</span>
+  </div>
 </div>
-<div class="hud badge"><strong>360°</strong><br>INTERAKTİV MODEL<br><span style="color:#746b60">CONCEPT · 001</span></div>
-<div class="hud footer"><div class="line"></div><p>Milli xalça naxışlarından ilhamlanan kubok. Modeli fırlat, yaxınlaşdır və bütün bucaqlardan araşdır.</p></div>
-<div class="controls">
-  <button id="spin" class="active">Avtomatik fırlanma</button>
-  <button id="front">Ön görünüş</button>
-  <button id="back">Arxa görünüş</button>
-  <button id="reset">Sıfırla</button>
-</div>
-<div class="hint">SÜRÜŞDÜR: FIRLAT · SCROLL / PINCH: YAXINLAŞDIR</div>
-<script type="module">
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js';
-import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/controls/OrbitControls.js';
 
-const host=document.getElementById('scene');
-const scene=new THREE.Scene();
-scene.background=new THREE.Color(0x0b0b0c);
-scene.fog=new THREE.Fog(0x0b0b0c,10,22);
-const camera=new THREE.PerspectiveCamera(34,innerWidth/innerHeight,.1,100);
-camera.position.set(6.5,5.0,9.5);
-const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false});
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-renderer.setSize(innerWidth,innerHeight);
-renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-renderer.outputColorSpace=THREE.SRGBColorSpace;
-renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.18;
-host.appendChild(renderer.domElement);
-const controls=new OrbitControls(camera,renderer.domElement);
-controls.target.set(0,2.35,0);controls.enableDamping=true;controls.dampingFactor=.06;
-controls.minDistance=4.5;controls.maxDistance=15;controls.maxPolarAngle=Math.PI*.88;
-controls.autoRotate=true;controls.autoRotateSpeed=1.15;
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+'use strict';
 
-scene.add(new THREE.HemisphereLight(0xb9c5dc,0x28160b,2.0));
-const key=new THREE.DirectionalLight(0xffd7a0,4.2);key.position.set(5,8,6);key.castShadow=true;key.shadow.mapSize.set(2048,2048);scene.add(key);
-const rim=new THREE.DirectionalLight(0x9e2832,2.4);rim.position.set(-5,4,-5);scene.add(rim);
-const fill=new THREE.PointLight(0xffbd62,45,12);fill.position.set(-3,2,4);scene.add(fill);
-const floor=new THREE.Mesh(new THREE.PlaneGeometry(200,200),new THREE.MeshStandardMaterial({color:0x111112,roughness:.34,metalness:.25}));
-floor.rotation.x=-Math.PI/2;floor.position.y=-.035;floor.receiveShadow=true;scene.add(floor);
+/* ---------- yardımcılar ---------- */
+const TAU = Math.PI*2;
+const V3 = THREE.Vector3;
+const clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
+const smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t)};
+let seed=20260;
+const rand=()=>(seed=(seed*1664525+1013904223)>>>0)/4294967296;
+const $=s=>document.querySelector(s);
+const tick=()=>new Promise(r=>setTimeout(r,16));
 
-function mat(color,metalness=0,roughness=.4){return new THREE.MeshStandardMaterial({color,metalness,roughness});}
-const gold=mat(0xc99a50,.82,.24), paleGold=mat(0xf1d49a,.75,.2), darkGold=mat(0x77502b,.8,.32), blackStone=mat(0x171719,.35,.26), ballBlack=mat(0x171719,.55,.26);
+const GOLD=0xd6a94a;
 
-// Create a woven carpet texture with a repeating geometric medallion.
-function carpetTexture(){
- const c=document.createElement('canvas');c.width=512;c.height=1024;const x=c.getContext('2d');
- x.fillStyle='#14202a';x.fillRect(0,0,512,1024);
- // tiny woven grain
- for(let y=0;y<1024;y+=3){x.fillStyle=y%6?'rgba(214,166,103,.10)':'rgba(0,0,0,.18)';x.fillRect(0,y,512,1)}
- const tile=(cx,cy,s)=>{
-  x.save();x.translate(cx,cy);
-  x.strokeStyle='#c99b59';x.lineWidth=5;x.fillStyle='#8f2c2b';
-  x.beginPath();x.moveTo(0,-s);x.lineTo(s*.7,0);x.lineTo(0,s);x.lineTo(-s*.7,0);x.closePath();x.fill();x.stroke();
-  x.strokeStyle='#f0d29b';x.lineWidth=2.5;x.beginPath();x.moveTo(0,-s*.72);x.lineTo(s*.5,0);x.lineTo(0,s*.72);x.lineTo(-s*.5,0);x.closePath();x.stroke();
-  x.fillStyle='#e7c47d';x.beginPath();x.moveTo(0,-s*.26);x.lineTo(s*.22,0);x.lineTo(0,s*.26);x.lineTo(-s*.22,0);x.closePath();x.fill();
-  for(let i=0;i<4;i++){x.save();x.rotate(i*Math.PI/2);x.fillStyle='#d9b878';x.beginPath();x.moveTo(0,-s*.42);x.lineTo(s*.12,-s*.23);x.lineTo(0,-s*.08);x.lineTo(-s*.12,-s*.23);x.closePath();x.fill();x.restore()}
-  x.restore();
- };
- // border bands
- for(let i=0;i<3;i++){x.strokeStyle=i===1?'#c99b59':'#a13c32';x.lineWidth=i===1?7:3;x.strokeRect(15+i*13,15+i*13,482-i*26,994-i*26)}
- for(let y=55;y<1024;y+=128){tile(256,y,42);tile(55,y+64,24);tile(457,y+64,24)}
- for(let y=0;y<1024;y+=32){x.fillStyle='#e5c38a';x.fillRect(25,y,5,13);x.fillRect(482,y+12,5,13)}
- const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.wrapS=THREE.RepeatWrapping;t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;return t;
-}
-const rugTex=carpetTexture();
-const rugMat=new THREE.MeshStandardMaterial({map:rugTex,roughness:.78,metalness:.04,side:THREE.DoubleSide});
-const group=new THREE.Group();scene.add(group);
+/* ---------- doku üreticileri ---------- */
 
-// Base: tapered, bevelled dark stone pedestal.
-function makeCylinder(rt,rb,h,material,y,radial=8){
- const mesh=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,radial,1,false),material);
- mesh.position.y=y;mesh.castShadow=true;mesh.receiveShadow=true;group.add(mesh);return mesh;
-}
-makeCylinder(.72,.88,.28,blackStone,.16,6);
-makeCylinder(.68,.78,.07,gold,.335,6);
-makeCylinder(.61,.73,.62,blackStone,.67,6);
-makeCylinder(.62,.68,.045,paleGold,1.005,6);
-makeCylinder(.55,.61,.07,darkGold,1.06,6);
-// Gold inlaid base trim lines
-for(let y of [.39,.91]){const tor=new THREE.Mesh(new THREE.TorusGeometry(y===.39?.75:.64,.018,8,6),paleGold);tor.rotation.y=Math.PI/6;tor.position.y=y;group.add(tor);}
-// Decorative front plaque on the base
-const plaque=new THREE.Mesh(new THREE.BoxGeometry(.48,.2,.025),mat(0x08090a,.55,.24));
-plaque.position.set(0,.69,.735);group.add(plaque);
-const plaqueEdge=new THREE.Mesh(new THREE.BoxGeometry(.51,.23,.012),gold);plaqueEdge.position.set(0,.69,.72);group.add(plaqueEdge);plaqueEdge.position.z=.716;plaque.position.z=.737;
-function makeTextTexture(lines){
- const c=document.createElement('canvas');c.width=512;c.height=180;const x=c.getContext('2d');x.clearRect(0,0,512,180);x.textAlign='center';x.fillStyle='#e0b66f';x.font='bold 37px Arial';x.fillText(lines[0],256,70);x.font='22px Arial';x.fillText(lines[1],256,112);return new THREE.CanvasTexture(c);
-}
-const label=new THREE.Mesh(new THREE.PlaneGeometry(.43,.15),new THREE.MeshBasicMaterial({map:makeTextTexture(['CARPET LEAGUE','CHAMPIONS'],),transparent:true,depthWrite:false}));
-label.position.set(0,.69,.755);group.add(label);
-
-// Twisting, woven-carpet body: a ribbon swept up around the vertical axis.
-const N=260, W=48, height=2.95, bottom=1.13, turns=1.15;
-const positions=[],uvs=[],indices=[];
-for(let i=0;i<=N;i++){
- const t=i/N, y=bottom+t*height, angle=t*Math.PI*2*turns+.2;
- const width=.94-.35*Math.sin(Math.PI*t);
- const radius=.43-.12*Math.sin(Math.PI*t);
- for(let j=0;j<=W;j++){
-  const u=j/W-.5;
-  const a=angle+u*.08;
-  const r=radius+u*width;
-  positions.push(Math.cos(a)*r,y,Math.sin(a)*r);
-  uvs.push(j/W,t*3.1);
- }
-}
-for(let i=0;i<N;i++)for(let j=0;j<W;j++){
- const a=i*(W+1)+j,b=a+W+1;indices.push(a,b,a+1,b,b+1,a+1);
-}
-const ribbonGeo=new THREE.BufferGeometry();ribbonGeo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));ribbonGeo.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));ribbonGeo.setIndex(indices);ribbonGeo.computeVertexNormals();
-const ribbon=new THREE.Mesh(ribbonGeo,rugMat);ribbon.castShadow=true;ribbon.receiveShadow=true;group.add(ribbon);
-
-// Metallic edging follows both long sides of the carpet ribbon.
-for(const side of [-.5,.5]){
- const pts=[];
- for(let i=0;i<=N;i++){const t=i/N,angle=t*Math.PI*2*turns+.2+side*.08,width=.94-.35*Math.sin(Math.PI*t),radius=.43-.12*Math.sin(Math.PI*t),r=radius+side*width;pts.push(new THREE.Vector3(Math.cos(angle)*r,bottom+t*height,Math.sin(angle)*r));}
- const curve=new THREE.CatmullRomCurve3(pts);
- const edge=new THREE.Mesh(new THREE.TubeGeometry(curve,400,.026,8,false),paleGold);edge.castShadow=true;group.add(edge);
- const fine=new THREE.Mesh(new THREE.TubeGeometry(curve,400,.008,6,false),darkGold);group.add(fine);
-}
-// Fine fringe tassels around upper rim, creating a fabric edge.
-for(let i=0;i<72;i++){
- const a=i/72*Math.PI*2, r=.52;
- const tassel=new THREE.Mesh(new THREE.CylinderGeometry(.008,.003,.105,5),i%3===0?paleGold:gold);
- tassel.position.set(Math.cos(a)*r,4.02,Math.sin(a)*r);tassel.rotation.z=(Math.random()-.5)*.18;tassel.rotation.x=(Math.random()-.5)*.18;group.add(tassel);
+// Halı dokuması: düğüm düğüm işlenmiş geleneksel desen
+function makeCarpetTextures(){
+  const N=48, C=20, S=N*C;
+  const col=document.createElement('canvas'); col.width=col.height=S;
+  const bmp=document.createElement('canvas'); bmp.width=bmp.height=S;
+  const g=col.getContext('2d'), b=bmp.getContext('2d');
+  const P={cream:[228,206,168], red:[158,30,36], red2:[190,52,46], navy:[20,24,46], navy2:[38,42,68]};
+  function pick(cx,cy){
+    const T=24;
+    const lx=(cx%T)-11.5, ly=(cy%T)-11.5;
+    const d=Math.abs(lx)+Math.abs(ly);
+    if(d<2) return P.cream;
+    if(d<4) return P.red;
+    if(d<6) return P.navy;
+    if(d<8) return ((cx+cy)%2)?P.red2:P.cream;
+    if(d<10) return P.red;
+    if(d<12) return P.navy;
+    if(d<13) return P.cream;
+    if(d>=21) return P.cream;
+    if(d>=19) return P.red;
+    if(d>=17) return P.navy;
+    return ((cx+cy)%4===0)?P.red:(((cx*3+cy)%7===0)?P.cream:P.navy2);
+  }
+  b.fillStyle='#808080'; b.fillRect(0,0,S,S);
+  for(let cy=0;cy<N;cy++)for(let cx=0;cx<N;cx++){
+    const c=pick(cx,cy), j=.88+rand()*.22, x=cx*C, y=cy*C;
+    g.fillStyle=`rgb(${c[0]*j|0},${c[1]*j|0},${c[2]*j|0})`; g.fillRect(x,y,C,C);
+    g.fillStyle='rgba(255,240,210,.10)'; g.fillRect(x+3,y+3,C-8,3);
+    g.fillStyle='rgba(0,0,0,.30)'; g.fillRect(x,y+C-3,C,3); g.fillRect(x+C-2,y,2,C);
+    const h=150+rand()*50|0;
+    b.fillStyle=`rgb(${h},${h},${h})`; b.fillRect(x+1,y+1,C-2,C-2);
+    b.fillStyle='rgba(255,255,255,.35)'; b.fillRect(x+3,y+3,C-8,4);
+    b.fillStyle='rgba(0,0,0,.6)'; b.fillRect(x,y+C-4,C,4); b.fillRect(x+C-3,y,3,C);
+  }
+  // yün lifleri
+  for(let i=0;i<9000;i++){
+    const x=rand()*S,y=rand()*S,l=3+rand()*5,a=rand()*TAU;
+    g.strokeStyle=rand()<.5?'rgba(255,235,200,.07)':'rgba(0,0,0,.10)';
+    g.lineWidth=1; g.beginPath(); g.moveTo(x,y); g.lineTo(x+Math.cos(a)*l,y+Math.sin(a)*l); g.stroke();
+  }
+  return {col,bmp};
 }
 
-// Ornamental gold football on top.
-const ballY=4.26, ballR=.56;
-const ball=new THREE.Mesh(new THREE.SphereGeometry(ballR,48,32),ballBlack);ball.position.y=ballY;ball.castShadow=true;group.add(ball);
-// Gold pentagon/hexagon-like panel network on sphere using curves.
-function spherePoint(lat,lon,r=ballR*1.003){return new THREE.Vector3(r*Math.cos(lat)*Math.cos(lon),ballY+r*Math.sin(lat),r*Math.cos(lat)*Math.sin(lon));}
-const lineMat=new THREE.MeshStandardMaterial({color:0xd9b16d,metalness:.82,roughness:.28});
-for(let lat=-1.15;lat<=1.16;lat+=.58){
- const pts=[];for(let k=0;k<=180;k++){const lon=k/180*Math.PI*2;pts.push(spherePoint(lat,lon));}
- const curve=new THREE.CatmullRomCurve3(pts);group.add(new THREE.Mesh(new THREE.TubeGeometry(curve,180,.009,5,false),lineMat));
-}
-for(let lon=0;lon<Math.PI;lon+=Math.PI/3){
- const pts=[];for(let k=0;k<=100;k++){const lat=-Math.PI/2+k/100*Math.PI;pts.push(spherePoint(lat,lon));}
- group.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),100,.009,5,false),lineMat));
-}
-// A central carpet medallion on the ball facing front
-const med=new THREE.Mesh(new THREE.PlaneGeometry(.28,.28),new THREE.MeshBasicMaterial({map:rugTex,transparent:false,side:THREE.DoubleSide}));
-med.position.set(0,ballY,.562);group.add(med);med.rotation.z=Math.PI/4;
-// Small ornamental bands around ball equator
-const equator=new THREE.Mesh(new THREE.TorusGeometry(ballR*1.002,.012,8,64),paleGold);equator.position.y=ballY;equator.rotation.x=Math.PI/2;group.add(equator);
-
-// A few subtle carpet lozenge ornaments around visible ribbon surface, on a front-facing approximate spiral.
-for(let i=0;i<7;i++){
- const t=.12+i*.115,ang=t*Math.PI*2*turns+.2, r=.43-.12*Math.sin(Math.PI*t)+.02;
- const ornament=new THREE.Mesh(new THREE.OctahedronGeometry(.07,0),paleGold);
- ornament.scale.set(.72,1.1,.14);ornament.position.set(Math.cos(ang)*r,bottom+t*height,Math.sin(ang)*r);ornament.rotation.y=-ang;group.add(ornament);
+function drawMarble(g,w,h,veins){
+  const gr=g.createLinearGradient(0,0,w,h);
+  gr.addColorStop(0,'#0f0f11'); gr.addColorStop(.5,'#171618'); gr.addColorStop(1,'#0b0b0c');
+  g.fillStyle=gr; g.fillRect(0,0,w,h);
+  for(let i=0;i<veins;i++){
+    let x=rand()*w,y=rand()*h,ang=rand()*TAU;
+    const gold=rand()<.3, steps=20+rand()*40|0;
+    g.beginPath(); g.moveTo(x,y);
+    for(let s=0;s<steps;s++){ang+=(rand()-.5)*.9;const l=8+rand()*22;x+=Math.cos(ang)*l;y+=Math.sin(ang)*l;g.lineTo(x,y);}
+    g.lineWidth=.4+rand()*1.6;
+    g.strokeStyle=gold?`rgba(214,170,80,${.12+rand()*.22})`:`rgba(210,210,218,${.05+rand()*.15})`;
+    g.stroke();
+  }
 }
 
-// Small feet/ground contact and discreet floor ring.
-const groundRing=new THREE.Mesh(new THREE.TorusGeometry(1.05,.009,6,96),mat(0x5b4932,.5,.4));groundRing.rotation.x=Math.PI/2;groundRing.position.y=.012;scene.add(groundRing);
+function drawEmblem(g,cx,cy,s,color,lw){
+  g.strokeStyle=color; g.fillStyle=color; g.lineWidth=lw; g.lineJoin='round';
+  for(const k of [1,.74,.48]){
+    g.beginPath(); g.moveTo(cx,cy-s*k); g.lineTo(cx+s*k,cy); g.lineTo(cx,cy+s*k); g.lineTo(cx-s*k,cy); g.closePath(); g.stroke();
+  }
+  const m=s*.2; g.beginPath(); g.moveTo(cx,cy-m); g.lineTo(cx+m,cy); g.lineTo(cx,cy+m); g.lineTo(cx-m,cy); g.closePath(); g.fill();
+  g.beginPath(); g.moveTo(cx,cy-s*1.18); g.lineTo(cx,cy-s); g.moveTo(cx,cy+s*1.18); g.lineTo(cx,cy+s);
+  g.moveTo(cx-s*1.18,cy); g.lineTo(cx-s,cy); g.moveTo(cx+s*1.18,cy); g.lineTo(cx+s,cy); g.stroke();
+}
 
-function resize(){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);}
-addEventListener('resize',resize);
-const spin=document.getElementById('spin');
-spin.addEventListener('click',()=>{controls.autoRotate=!controls.autoRotate;spin.classList.toggle('active',controls.autoRotate);spin.textContent=controls.autoRotate?'Avtomatik fırlanma':'Avtomatik fırlanma: OFF';});
-document.getElementById('front').addEventListener('click',()=>{camera.position.set(0,3.4,10.5);controls.target.set(0,2.35,0);controls.update();});
-document.getElementById('back').addEventListener('click',()=>{camera.position.set(0,3.4,-10.5);controls.target.set(0,2.35,0);controls.update();});
-document.getElementById('reset').addEventListener('click',()=>{camera.position.set(6.5,5,9.5);controls.target.set(0,2.35,0);controls.autoRotate=true;spin.classList.add('active');spin.textContent='Avtomatik fırlanma';controls.update();});
-function animate(){requestAnimationFrame(animate);controls.update();renderer.render(scene,camera);}
-animate();
-document.getElementById('loading').classList.add('hide');
-setTimeout(()=>document.getElementById('loading')?.remove(),700);
+// Siyah mermer taban: 8 yüz, ilk yüz ön yüz (logo + yazı)
+function makeBaseTexture(){
+  const PW=480, PH=640;
+  const c=document.createElement('canvas'); c.width=PW*8; c.height=PH;
+  const g=c.getContext('2d');
+  drawMarble(g,c.width,PH,280);
+  const gold='rgba(218,176,84,.95)';
+  for(let p=0;p<8;p++){
+    const x0=p*PW, cx=x0+PW/2;
+    g.strokeStyle=gold; g.lineWidth=5; g.strokeRect(x0+22,22,PW-44,PH-44);
+    g.lineWidth=1.5; g.strokeRect(x0+36,36,PW-72,PH-72);
+    if(p===0){
+      drawEmblem(g,cx,205,64,gold,4);
+      g.fillStyle='#dcb55a'; g.textAlign='center'; g.textBaseline='alphabetic';
+      const ls=v=>{ if('letterSpacing' in g) g.letterSpacing=v; };
+      g.font='500 37px Jost,"Segoe UI",Arial,sans-serif'; ls('4px');
+      g.fillText('CARPET LEAGUE',cx+2,372);
+      g.fillStyle=gold; g.fillRect(cx-70,402,140,2);
+      g.font='400 23px Jost,"Segoe UI",Arial,sans-serif'; ls('3px'); g.fillStyle='#dcb55a';
+      g.fillText('DISTLAR ARASI',cx+1,450);
+      g.fillText('FUTBOL LIQASI',cx+1,486);
+      ls('0px');
+    } else {
+      const a=(p===1||p===7)?1:.55;
+      g.globalAlpha=a; g.strokeStyle=gold; g.lineWidth=4;
+      g.beginPath(); g.moveTo(cx,60); g.lineTo(cx,PH-60); g.stroke();
+      for(let y=120;y<PH-90;y+=96){
+        const h=34;
+        g.fillStyle='#0d0d0f';
+        g.beginPath(); g.moveTo(cx,y-h); g.lineTo(cx+h,y); g.lineTo(cx,y+h); g.lineTo(cx-h,y); g.closePath(); g.fill(); g.stroke();
+        const m=14; g.fillStyle=gold;
+        g.beginPath(); g.moveTo(cx,y-m); g.lineTo(cx+m,y); g.lineTo(cx,y+m); g.lineTo(cx-m,y); g.closePath(); g.fill();
+        g.lineWidth=2;
+        g.beginPath(); g.moveTo(cx-h-26,y); g.lineTo(cx-h-6,y); g.moveTo(cx+h+6,y); g.lineTo(cx+h+26,y); g.stroke();
+        g.lineWidth=4;
+      }
+      g.globalAlpha=1;
+    }
+  }
+  return c;
+}
+
+// Futbol topu: kesik ikosahedron (12 beşgen + 20 altıgen) desenini piksel piksel hesapla
+function makeBallTexture(){
+  const W=2048, H=1024;
+  const c=document.createElement('canvas'); c.width=W; c.height=H;
+  const g=c.getContext('2d');
+  const img=g.createImageData(W,H), d=img.data;
+  const phi=(1+Math.sqrt(5))/2;
+  const raw=[];
+  for(const a of [-1,1]) for(const b of [-phi,phi]) raw.push([0,a,b],[a,b,0],[b,0,a]);
+  const nrm=v=>{const l=Math.hypot(v[0],v[1],v[2]);return [v[0]/l,v[1]/l,v[2]/l]};
+  const V=raw.map(nrm);
+  const F=[];
+  for(let i=0;i<12;i++)for(let j=i+1;j<12;j++)for(let k=j+1;k<12;k++){
+    const e=(p,q)=>{const s=(raw[p][0]-raw[q][0])**2+(raw[p][1]-raw[q][1])**2+(raw[p][2]-raw[q][2])**2;return Math.abs(s-4)<1e-6};
+    if(e(i,j)&&e(j,k)&&e(i,k)) F.push(nrm([V[i][0]+V[j][0]+V[k][0],V[i][1]+V[j][1]+V[k][1],V[i][2]+V[j][2]+V[k][2]]));
+  }
+  const ang=0.2873, sa=Math.sin(ang), ca=Math.cos(ang);
+  const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+  const N=[], E1=[], E2=[];
+  for(const v of V){
+    const ns=[]; let e1=null;
+    for(const f of F){
+      if(dot(f,v)>.7){
+        const t=dot(f,v);
+        const e=nrm([f[0]-v[0]*t,f[1]-v[1]*t,f[2]-v[2]*t]);
+        if(!e1) e1=e;
+        ns.push([v[0]*sa-e[0]*ca,v[1]*sa-e[1]*ca,v[2]*sa-e[2]*ca]);
+      }
+    }
+    N.push(ns); E1.push(e1);
+    E2.push([v[1]*e1[2]-v[2]*e1[1], v[2]*e1[0]-v[0]*e1[2], v[0]*e1[1]-v[1]*e1[0]]);
+  }
+  const GOLDC=[218,172,76], PENT=[16,13,11], SEAM=[34,24,10], EMB=[205,162,70];
+  for(let y=0;y<H;y++){
+    const th=(y+.5)/H*Math.PI, st=Math.sin(th), ct=Math.cos(th);
+    for(let x=0;x<W;x++){
+      const ph=(x+.5)/W*TAU;
+      const p=[-Math.cos(ph)*st, ct, Math.sin(ph)*st];
+      let best=-2, bi=0;
+      for(let k=0;k<12;k++){const dd=dot(p,V[k]); if(dd>best){best=dd;bi=k;}}
+      let dp=9; for(const n of N[bi]){const t=dot(p,n); if(t<dp)dp=t;}
+      let base, dist;
+      if(dp>0){
+        base=PENT; dist=dp;
+        const qx=dot(p,E1[bi])/sa, qy=dot(p,E2[bi])/sa, s=Math.abs(qx)+Math.abs(qy);
+        if(s<.18||Math.abs(s-.62)<.055||Math.abs(s-.4)<.025) base=EMB;
+      } else {
+        let d1=-2,d2=-2;
+        for(let k=0;k<20;k++){const dd=dot(p,F[k]); if(dd>d1){d2=d1;d1=dd;}else if(dd>d2){d2=dd;}}
+        dist=Math.min(-dp,(d1-d2)*1.1);
+        const br=.9+.1*Math.sin(p[0]*5+p[1]*3)*Math.cos(p[2]*4);
+        base=[GOLDC[0]*br,GOLDC[1]*br,GOLDC[2]*br];
+      }
+      const t=1-smooth(.008,.026,dist);
+      const o=(y*W+x)*4;
+      d[o]=base[0]+(SEAM[0]-base[0])*t; d[o+1]=base[1]+(SEAM[1]-base[1])*t; d[o+2]=base[2]+(SEAM[2]-base[2])*t; d[o+3]=255;
+    }
+  }
+  g.putImageData(img,0,0);
+  return {canvas:c, vertex:new V3(...V[0])};
+}
+
+/* ---------- model ---------- */
+const Y0=9.7, Y1=35.5, TILT_PHI=Math.PI*.3;
+function radiusAt(h){
+  if(h<.5){const s=h/.5;return 2.25+2.05*Math.pow(1-s,2.2);}
+  const s=(h-.5)/.5; return 2.25+3.85*Math.pow(s,2);
+}
+function bodyP(a,h,off){
+  off=off||0;
+  const t=smooth(.72,1,h);
+  let r=(radiusAt(h)+off)*(1+t*.035*Math.sin(a*3+1));
+  const y=Y0+h*(Y1-Y0)+Math.pow(t,1.4)*1.8*Math.cos(a-TILT_PHI);
+  return new V3(r*Math.sin(a),y,r*Math.cos(a));
+}
+
+function buildBody(mat){
+  const SEG=192, ROW=120, pos=[], uv=[], idx=[];
+  for(let j=0;j<=ROW;j++){
+    const h=j/ROW;
+    for(let i=0;i<=SEG;i++){
+      const a=i/SEG*TAU, p=bodyP(a,h);
+      pos.push(p.x,p.y,p.z);
+      uv.push(i/SEG + h*.35, h);
+    }
+  }
+  for(let j=0;j<ROW;j++)for(let i=0;i<SEG;i++){
+    const a=j*(SEG+1)+i, b=a+1, c=a+SEG+1, d=c+1;
+    idx.push(a,b,c, b,d,c);
+  }
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+  geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
+  geo.setIndex(idx); geo.computeVertexNormals();
+  const n=geo.attributes.normal;
+  for(let j=0;j<=ROW;j++){
+    const a=j*(SEG+1), b=a+SEG;
+    const x=(n.getX(a)+n.getX(b))/2, y=(n.getY(a)+n.getY(b))/2, z=(n.getZ(a)+n.getZ(b))/2;
+    n.setXYZ(a,x,y,z); n.setXYZ(b,x,y,z);
+  }
+  return new THREE.Mesh(geo,mat);
+}
+
+function buildRibbon(mat){
+  const n=360, turns=.88, pos=[], idx=[];
+  const A0=-1.5;
+  const pts=[], nors=[];
+  const at=t=>{
+    const a=A0+t*TAU*turns, h=.965-t*.86;
+    return {a, p:bodyP(a,h,.14)};
+  };
+  for(let i=0;i<=n;i++){
+    const t=i/n, c=at(t), c2=at(Math.min(1,t+.002)), c0=at(Math.max(0,t-.002));
+    const T=c2.p.clone().sub(c0.p).normalize();
+    const O=new V3(Math.sin(c.a),0,Math.cos(c.a));
+    const W=new V3().crossVectors(T,O).normalize();
+    const w=(.08+1.05*Math.pow(Math.sin(Math.PI*t),.55))*.5;
+    const L=c.p.clone().addScaledVector(W,w), R=c.p.clone().addScaledVector(W,-w);
+    const M=c.p.clone().addScaledVector(O,.09);
+    pos.push(L.x,L.y,L.z, M.x,M.y,M.z, R.x,R.y,R.z);
+  }
+  for(let i=0;i<n;i++){
+    const a=i*3, b=a+3;
+    idx.push(a,a+1,b, a+1,b+1,b, a+1,a+2,b+1, a+2,b+2,b+1);
+  }
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+  geo.setIndex(idx); geo.computeVertexNormals();
+  return new THREE.Mesh(geo,mat);
+}
+
+function rod(a,b,r,mat){
+  const d=b.clone().sub(a), len=d.length();
+  const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,len,10),mat);
+  m.position.copy(a).addScaledVector(d,.5);
+  m.quaternion.setFromUnitVectors(new V3(0,1,0),d.normalize());
+  return m;
+}
+
+/* ---------- ortam yansıması (stüdyo ışık kutuları) ---------- */
+function makeEnvironment(renderer){
+  const s=new THREE.Scene();
+  const sky=new THREE.Mesh(new THREE.SphereGeometry(60,32,16),new THREE.ShaderMaterial({
+    side:THREE.BackSide,
+    vertexShader:'varying vec3 vP;void main(){vP=normalize(position);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+    fragmentShader:'varying vec3 vP;void main(){float h=vP.y*.5+.5;vec3 c=mix(vec3(.012,.010,.009),vec3(.09,.07,.05),smoothstep(.35,1.,h));gl_FragColor=vec4(c,1.);}'
+  }));
+  s.add(sky);
+  const box=(w,h,pos,rgb)=>{
+    const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({side:THREE.DoubleSide}));
+    m.material.color.setRGB(rgb[0],rgb[1],rgb[2]);
+    m.position.set(pos[0],pos[1],pos[2]); m.lookAt(0,0,0); s.add(m);
+  };
+  box(26,70,[-42,18,22],[7,5.6,4]);
+  box(14,70,[44,12,10],[3.2,3.6,4.4]);
+  box(60,22,[0,46,0],[3.4,3,2.6]);
+  box(40,50,[0,14,-46],[3.6,3,2.4]);
+  box(8,60,[28,10,40],[5,4.4,3.6]);
+  box(8,60,[-26,10,-38],[4.5,3.8,3]);
+  box(40,6,[0,-1,44],[1.2,1,.8]);
+  const pm=new THREE.PMREMGenerator(renderer);
+  const rt=pm.fromScene(s,.02);
+  pm.dispose();
+  return rt.texture;
+}
+
+/* ---------- ana kurulum ---------- */
+const canvas=$('#stage');
+let renderer, scene, camera, trophy, mats=[];
+
+async function build(){
+  $('#loadMsg').textContent='Doku ve malzemeler hazırlanıyor…';
+  await tick();
+
+  renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  renderer.outputEncoding=THREE.sRGBEncoding;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.08;
+  renderer.shadowMap.enabled=true;
+  renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  const aniso=renderer.capabilities.getMaxAnisotropy();
+
+  scene=new THREE.Scene();
+  scene.background=new THREE.Color(0x0a0807);
+  scene.fog=new THREE.Fog(0x0a0807,140,360);
+  scene.environment=makeEnvironment(renderer);
+
+  camera=new THREE.PerspectiveCamera(30,1,.5,900);
+
+  // dokular
+  const ct=makeCarpetTextures();
+  const carpetMap=new THREE.CanvasTexture(ct.col);
+  const carpetBump=new THREE.CanvasTexture(ct.bmp);
+  for(const t of [carpetMap,carpetBump]){t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(2,1.2);t.anisotropy=aniso;}
+  carpetMap.encoding=THREE.sRGBEncoding;
+  await tick();
+
+  const baseTex=new THREE.CanvasTexture(makeBaseTexture());
+  baseTex.encoding=THREE.sRGBEncoding; baseTex.anisotropy=aniso;
+  const plainC=document.createElement('canvas'); plainC.width=plainC.height=1024;
+  drawMarble(plainC.getContext('2d'),1024,1024,160);
+  const plainTex=new THREE.CanvasTexture(plainC); plainTex.encoding=THREE.sRGBEncoding; plainTex.anisotropy=aniso;
+  await tick();
+
+  $('#loadMsg').textContent='Top deseni hesaplanıyor…';
+  await tick();
+  const ball=makeBallTexture();
+  const ballTex=new THREE.CanvasTexture(ball.canvas);
+  ballTex.encoding=THREE.sRGBEncoding; ballTex.anisotropy=aniso;
+  await tick();
+
+  // malzemeler
+  const carpetMat=new THREE.MeshStandardMaterial({map:carpetMap,bumpMap:carpetBump,bumpScale:2.2,roughness:.95,metalness:0,side:THREE.DoubleSide});
+  const goldMat=new THREE.MeshStandardMaterial({color:GOLD,metalness:1,roughness:.2,side:THREE.DoubleSide});
+  const marbleSide=new THREE.MeshPhysicalMaterial({map:baseTex,roughness:.22,metalness:.1,clearcoat:1,clearcoatRoughness:.06});
+  const marblePlain=new THREE.MeshPhysicalMaterial({map:plainTex,roughness:.2,metalness:.1,clearcoat:1,clearcoatRoughness:.06});
+  const ballMat=new THREE.MeshStandardMaterial({map:ballTex,metalness:1,roughness:.2});
+  const rimMat=new THREE.MeshStandardMaterial({color:0x8a2227,roughness:.95});
+  const fringeMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.95});
+  mats=[carpetMat,goldMat,marbleSide,marblePlain,ballMat,rimMat,fringeMat];
+
+  trophy=new THREE.Group();
+
+  // taban
+  const oct=-Math.PI/8;
+  const slab=new THREE.Mesh(new THREE.CylinderGeometry(7.4,7.6,1.2,8,1,false,oct),marblePlain);
+  slab.position.y=.6; trophy.add(slab);
+  const RT=5.6, RB=7.0, YB=1.2, YT=9.0;
+  const main=new THREE.Mesh(new THREE.CylinderGeometry(RT,RB,YT-YB,8,1,false,oct),[marbleSide,marblePlain,marblePlain]);
+  main.position.y=(YB+YT)/2; trophy.add(main);
+  const ringB=new THREE.Mesh(new THREE.CylinderGeometry(7.12,7.2,.5,8,1,false,oct),goldMat); ringB.position.y=1.45; trophy.add(ringB);
+  const ringT=new THREE.Mesh(new THREE.CylinderGeometry(5.72,5.78,.5,8,1,false,oct),goldMat); ringT.position.y=8.8; trophy.add(ringT);
+  for(let k=0;k<8;k++){
+    const th=oct+k*Math.PI/4;
+    const a=new V3(RB*1.005*Math.sin(th),YB+.3,RB*1.005*Math.cos(th));
+    const b=new V3(RT*1.005*Math.sin(th),YT-.3,RT*1.005*Math.cos(th));
+    trophy.add(rod(a,b,.13,goldMat));
+  }
+  // altın yaka
+  const collar=new THREE.Mesh(new THREE.CylinderGeometry(4.55,4.95,.85,64),goldMat); collar.position.y=9.4; trophy.add(collar);
+  const collar2=new THREE.Mesh(new THREE.TorusGeometry(4.5,.16,10,64),goldMat); collar2.rotation.x=Math.PI/2; collar2.position.y=9.85; trophy.add(collar2);
+
+  // halı gövde, kenar, saçak, altın şerit
+  trophy.add(buildBody(carpetMat));
+  const rimPts=[]; for(let i=0;i<120;i++) rimPts.push(bodyP(i/120*TAU,1,0));
+  const rim=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(rimPts,true),240,.3,10,true),rimMat);
+  trophy.add(rim);
+
+  const FN=950, fgeo=new THREE.BoxGeometry(.06,1,.06); fgeo.translate(0,.5,0);
+  const fr=new THREE.InstancedMesh(fgeo,fringeMat,FN);
+  const dm=new THREE.Object3D(), up=new V3(0,1,0), cc=new THREE.Color();
+  for(let i=0;i<FN;i++){
+    const a=i/FN*TAU+(rand()-.5)*.012, p=bodyP(a,1,.1);
+    const out=new V3(Math.sin(a),0,Math.cos(a)), tg=new V3(Math.cos(a),0,-Math.sin(a));
+    const dir=out.clone().addScaledVector(up,.1+rand()*.55).addScaledVector(tg,(rand()-.5)*.35).normalize();
+    dm.position.copy(p); dm.quaternion.setFromUnitVectors(up,dir);
+    dm.scale.set(1,1+rand()*.9,1); dm.updateMatrix();
+    fr.setMatrixAt(i,dm.matrix);
+    fr.setColorAt(i,cc.setHSL(.095,.38,.6+rand()*.2));
+  }
+  trophy.add(fr);
+
+  trophy.add(buildRibbon(goldMat));
+
+  // top
+  const ballMesh=new THREE.Mesh(new THREE.SphereGeometry(5.5,96,64),ballMat);
+  ballMesh.position.y=38.5;
+  ballMesh.quaternion.setFromUnitVectors(ball.vertex,new V3(.12,.3,1).normalize());
+  trophy.add(ballMesh);
+
+  trophy.traverse(o=>{if(o.isMesh){o.castShadow=true;}});
+  slab.receiveShadow=main.receiveShadow=true;
+  scene.add(trophy);
+
+  // yansıma (zemin altında ters kopya)
+  const refl=trophy.clone(true);
+  refl.scale.y=-1;
+  refl.traverse(o=>{o.castShadow=false;o.receiveShadow=false;});
+  scene.add(refl);
+
+  // zemin
+  const floor=new THREE.Mesh(new THREE.CircleGeometry(600,64),
+    new THREE.MeshStandardMaterial({color:0x0b0908,roughness:.28,metalness:.6,envMapIntensity:.35,transparent:true,opacity:.9}));
+  floor.rotation.x=-Math.PI/2; scene.add(floor);
+  const shadowPlane=new THREE.Mesh(new THREE.PlaneGeometry(220,220),new THREE.ShadowMaterial({opacity:.55}));
+  shadowPlane.rotation.x=-Math.PI/2; shadowPlane.position.y=.03; shadowPlane.receiveShadow=true; scene.add(shadowPlane);
+
+  // ışıklar
+  const key=new THREE.DirectionalLight(0xffe2b8,1.6);
+  key.position.set(34,90,52); key.castShadow=true;
+  key.shadow.mapSize.set(2048,2048);
+  Object.assign(key.shadow.camera,{left:-45,right:45,top:60,bottom:-30,near:10,far:260});
+  key.shadow.bias=-.0004; key.shadow.normalBias=.06;
+  key.target.position.set(0,20,0); scene.add(key,key.target);
+  const rimL=new THREE.DirectionalLight(0xbcd0ff,.7); rimL.position.set(-50,40,-60); scene.add(rimL);
+  const fill=new THREE.HemisphereLight(0xffe9cc,0x120d08,.35); scene.add(fill);
+  const spot=new THREE.SpotLight(0xffd9a0,1.1,0,.42,1); spot.position.set(0,120,10); spot.target.position.set(0,20,0); scene.add(spot,spot.target);
+
+  initControls();
+  resize();
+  window.addEventListener('resize',resize);
+  requestAnimationFrame(t=>{prev=t;frame(t);});
+  $('#loader').classList.add('done');
+  setTimeout(()=>$('#loader').remove(),1000);
+}
+
+/* ---------- kamera ve kontroller ---------- */
+const cam={az:.55,el:.2,dist:150,ty:21};
+const goal={az:cam.az-2.2,el:.18,dist:100,ty:21};
+let fit=1, auto=!window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+let dragging=false, vAz=0, lastInt=-1e9, sliderActive=false, wire=false;
+let prev=0;
+
+const VIEWS=[
+  {k:'on',   t:'Ön',            az:0,            el:.10, d:100, ty:21},
+  {k:'yan',  t:'Yan',           az:Math.PI/2,    el:.10, d:100, ty:21},
+  {k:'arka', t:'Arka',          az:Math.PI,      el:.10, d:100, ty:21},
+  {k:'ust',  t:'Üst',           az:0,            el:1.5, d:78,  ty:30},
+  {k:'top',  t:'Top detayı',    az:.35,          el:.30, d:36,  ty:38.5},
+  {k:'hali', t:'Halı deseni',   az:-.35,         el:.08, d:40,  ty:22},
+  {k:'taban',t:'Taban detayı',  az:.28,          el:.20, d:40,  ty:6}
+];
+
+function wrapNear(target,ref){return ref+Math.atan2(Math.sin(target-ref),Math.cos(target-ref));}
+
+function resize(){
+  const w=window.innerWidth,h=window.innerHeight;
+  renderer.setSize(w,h,false);
+  camera.aspect=w/h; camera.updateProjectionMatrix();
+  fit=Math.max(1,.85/camera.aspect);
+  if(!initControls.set){goal.dist=100*fit;}
+}
+
+function clearViewSel(){document.querySelectorAll('#views button.on').forEach(b=>b.classList.remove('on'));}
+function interact(){lastInt=performance.now();$('#hint').classList.add('gone');}
+function setAuto(v){auto=v;$('#autoBtn').setAttribute('aria-pressed',v);}
+
+function initControls(){
+  initControls.set=true;
+  const vb=$('#views');
+  VIEWS.forEach(v=>{
+    const b=document.createElement('button'); b.textContent=v.t; b.type='button';
+    b.addEventListener('click',()=>{
+      interact(); setAuto(false); clearViewSel(); b.classList.add('on');
+      goal.az=wrapNear(v.az,cam.az); goal.el=v.el; goal.dist=Math.max(18,v.d*(v.d>60?fit:Math.min(fit,1.4))); goal.ty=v.ty; vAz=0;
+    });
+    vb.appendChild(b);
+  });
+
+  const pts=new Map(); let pinch=0, lx=0, ly=0, lt=0;
+  canvas.addEventListener('pointerdown',e=>{
+    canvas.setPointerCapture(e.pointerId); pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    dragging=true; canvas.classList.add('drag'); lx=e.clientX; ly=e.clientY; lt=e.timeStamp; vAz=0;
+    if(pts.size===2){const [a,b]=[...pts.values()];pinch=Math.hypot(a.x-b.x,a.y-b.y);}
+    interact(); clearViewSel();
+  });
+  canvas.addEventListener('pointermove',e=>{
+    if(!pts.has(e.pointerId))return;
+    pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(pts.size>=2){
+      const [a,b]=[...pts.values()], dd=Math.hypot(a.x-b.x,a.y-b.y);
+      if(pinch>0) goal.dist=clamp(goal.dist*pinch/dd,18,190*fit);
+      pinch=dd; interact(); return;
+    }
+    const dx=e.clientX-lx, dy=e.clientY-ly, dt=Math.max(1,e.timeStamp-lt);
+    lx=e.clientX; ly=e.clientY; lt=e.timeStamp;
+    const dA=-dx*.0065;
+    goal.az+=dA; goal.el=clamp(goal.el+dy*.005,.02,1.5);
+    vAz=clamp(vAz*.5+(dA/dt*1000)*.5,-7,7);
+    interact();
+  });
+  const end=e=>{
+    pts.delete(e.pointerId); pinch=0;
+    if(pts.size===0){dragging=false;canvas.classList.remove('drag'); if(e.timeStamp-lt>90)vAz=0;}
+    interact();
+  };
+  canvas.addEventListener('pointerup',end);
+  canvas.addEventListener('pointercancel',end);
+  canvas.addEventListener('wheel',e=>{
+    e.preventDefault();
+    goal.dist=clamp(goal.dist*Math.exp(e.deltaY*.0012),18,190*fit);
+    interact(); clearViewSel();
+  },{passive:false});
+  canvas.addEventListener('keydown',e=>{
+    const m={ArrowLeft:[-.2,0],ArrowRight:[.2,0],ArrowUp:[0,-.1],ArrowDown:[0,.1]}[e.key];
+    if(m){e.preventDefault();goal.az+=m[0];goal.el=clamp(goal.el+m[1],.02,1.5);interact();clearViewSel();}
+    if(e.key==='+'||e.key==='='){goal.dist=clamp(goal.dist*.88,18,190*fit);}
+    if(e.key==='-'){goal.dist=clamp(goal.dist*1.14,18,190*fit);}
+  });
+
+  const sl=$('#angle');
+  sl.addEventListener('pointerdown',()=>{sliderActive=true;});
+  window.addEventListener('pointerup',()=>{sliderActive=false;});
+  sl.addEventListener('input',()=>{
+    interact(); clearViewSel(); vAz=0;
+    goal.az=wrapNear(sl.value*Math.PI/180,cam.az);
+    $('#angleOut').textContent=sl.value+'°';
+  });
+
+  $('#autoBtn').addEventListener('click',()=>{setAuto(!auto);lastInt=-1e9;});
+  $('#wireBtn').addEventListener('click',e=>{
+    wire=!wire; e.currentTarget.setAttribute('aria-pressed',wire);
+    mats.forEach(m=>{m.wireframe=wire;m.needsUpdate=true;});
+  });
+}
+
+function frame(t){
+  const dt=Math.min(.05,(t-prev)/1000); prev=t;
+  if(!dragging){
+    goal.az+=vAz*dt; vAz*=Math.exp(-dt*3.5);
+    if(auto&&t-lastInt>2500) goal.az+=.36*dt;
+  }
+  const k=1-Math.exp(-dt*7);
+  cam.az+=(goal.az-cam.az)*k;
+  cam.el+=(goal.el-cam.el)*k;
+  cam.dist+=(goal.dist-cam.dist)*k;
+  cam.ty+=(goal.ty-cam.ty)*k;
+  const ce=Math.cos(cam.el);
+  camera.position.set(cam.dist*ce*Math.sin(cam.az),cam.ty+cam.dist*Math.sin(cam.el),cam.dist*ce*Math.cos(cam.az));
+  camera.lookAt(0,cam.ty,0);
+
+  if(!sliderActive){
+    const deg=((cam.az*180/Math.PI)%360+360)%360;
+    const r=Math.round(deg)%360;
+    const sl=$('#angle'); if(+sl.value!==r){sl.value=r;$('#angleOut').textContent=r+'°';}
+  }
+  renderer.render(scene,camera);
+  requestAnimationFrame(frame);
+}
+
+/* ---------- başlat ---------- */
+window.addEventListener('load',async()=>{
+  try{ await Promise.race([document.fonts.load('500 40px Jost'),new Promise(r=>setTimeout(r,1500))]); }catch(e){}
+  try{ await build(); }
+  catch(err){
+    console.error(err);
+    $('#loadMsg').textContent='3D model yüklenemedi. Tarayıcınız WebGL desteklemiyor olabilir veya internet bağlantısı kesik (three.js yüklenemedi).';
+  }
+});
+})();
 </script>
 </body>
-  </html>
+ </html>
