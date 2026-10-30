@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palet – Amatör ressamların tabloları</title>
+<style>
+:root{
+  --wall:#E3E5DC; --paper:#F0F1EA; --ink:#1F241D; --muted:#5E655A; --line:#C9CCBF;
+  --olive:#4A5240; --ultra:#2F4B7C; --ultra-ink:#fff; --ochre:#C7962B; --madder:#A33A4A;
+  --frame:#5B4636; --mat:#F6F5EE; --shadow:0 10px 24px -12px rgba(30,25,15,.45);
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:"Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --wall:#171A15; --paper:#20241F; --ink:#E8E8DD; --muted:#A3AA9B; --line:#363C33;
+    --olive:#9DAA8A; --ultra:#8FA9DB; --ultra-ink:#101623; --ochre:#E0B24A; --madder:#E0788A;
+    --frame:#7A604A; --mat:#2A2E27; --shadow:0 10px 24px -12px rgba(0,0,0,.8);
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--wall);color:var(--ink);font:16px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--ultra);outline-offset:2px}
+h1,h2,h3{font-family:var(--serif);font-weight:500;line-height:1.12;margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--ink);background:transparent;padding:10px 18px;border-radius:999px;font-weight:600;font-size:15px}
+.btn:hover{background:var(--ink);color:var(--wall)}
+.btn.primary{background:var(--ultra);border-color:var(--ultra);color:var(--ultra-ink)}
+.btn.primary:hover{filter:brightness(1.12)}
+.btn.ghost{border-color:transparent;padding:8px 12px}
+.btn.ghost:hover{background:var(--paper);color:var(--ink)}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.btn.sm{padding:6px 12px;font-size:13px}
+
+/* header */
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--wall) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:14px;min-height:64px;flex-wrap:wrap;padding-top:6px;padding-bottom:6px}
+.logo{display:flex;align-items:center;gap:10px;background:none;border:0;padding:0;font-family:var(--serif);font-size:26px;font-style:italic}
+.logo svg{width:32px;height:32px}
+.top nav{display:flex;gap:2px;margin-left:12px}
+.tools{margin-left:auto;display:flex;gap:6px;align-items:center}
+.count{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:var(--ochre);color:#1F241D;font-size:12px;font-weight:700}
+.who{font-size:14px;color:var(--muted);padding:0 6px}
+
+/* hero */
+.hero{padding:44px 0 28px}
+.hero .wrap{display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:center}
+.hero h1{font-size:clamp(38px,5.4vw,64px);letter-spacing:-.01em}
+.hero p{font-size:18px;color:var(--muted);max-width:46ch;margin:18px 0 26px}
+.hero .cta{display:flex;gap:10px;flex-wrap:wrap}
+.hang{display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(6,minmax(0,1fr));gap:12px;aspect-ratio:1/1.02;padding:22px;background:var(--paper);border-radius:6px;box-shadow:inset 0 0 0 1px var(--line)}
+.hang .frame{box-shadow:var(--shadow);display:block;width:100%;height:100%;padding:0}
+.hang .h1{grid-column:1/4;grid-row:1/4}
+.hang .h2{grid-column:4/7;grid-row:1/3}
+.hang .h3{grid-column:4/6;grid-row:3/7}
+.hang .h4{grid-column:1/4;grid-row:4/7}
+.hang .h5{grid-column:6/7;grid-row:3/5}
+.hang .h5{display:none}
+.frame{border:0;background:var(--frame);padding:6px;display:block;width:100%}
+.frame>.art{display:block;width:100%;position:relative;overflow:hidden;background:var(--mat)}
+.frame svg,.frame img{display:block;width:100%;height:100%;object-fit:cover}
+.hang .frame>.art{height:100%}
+
+/* toolbar */
+.bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:18px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:18px}
+.bar input[type=search]{flex:1 1 220px;min-width:0;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:10px 16px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:transparent;border-radius:999px;padding:7px 14px;font-size:14px}
+.chip[aria-pressed=true]{background:var(--olive);border-color:var(--olive);color:var(--wall)}
+select{background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:9px 14px}
+
+/* masonry */
+.masonry{columns:3 260px;column-gap:28px;padding:28px 0 60px}
+.work{break-inside:avoid;margin:0 0 34px;position:relative}
+.work .frame{box-shadow:var(--shadow);transition:transform .2s}
+.work .frame:hover{transform:translateY(-3px)}
+.work .heart{position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;border:0;background:var(--paper);display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.heart svg{width:20px;height:20px;fill:none;stroke:var(--ink);stroke-width:2}
+.heart[aria-pressed=true] svg{fill:var(--madder);stroke:var(--madder)}
+.label{padding:12px 4px 0;display:grid;gap:2px}
+.label h3{font-size:20px;font-style:italic}
+.label .by{font-size:14px;color:var(--muted)}
+.label .row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:4px}
+.price{font-family:var(--serif);font-size:20px;font-weight:600}
+.small{font-size:13px;color:var(--muted)}
+.sold{position:absolute;left:14px;top:14px;background:var(--madder);color:#fff;font-size:12px;font-weight:700;padding:4px 10px;border-radius:3px;letter-spacing:.02em}
+.empty{padding:70px 20px;text-align:center;color:var(--muted)}
+.empty h2{color:var(--ink);margin-bottom:8px;font-size:28px}
+
+/* seller band */
+.band{background:var(--olive);color:var(--wall);padding:44px 0}
+@media (prefers-color-scheme:dark){.band{background:#2B3326;color:var(--ink)}}
+.band .wrap{display:flex;gap:28px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.band h2{font-size:32px;max-width:22ch}
+.band ol{margin:0;padding:0;list-style:none;display:flex;gap:26px;flex-wrap:wrap;font-size:15px}
+.band li{max-width:20ch}
+.band li b{display:block;font-family:var(--serif);font-size:20px;font-weight:500}
+.band .btn{border-color:currentColor}
+.band .btn:hover{background:var(--wall);color:var(--olive)}
+footer{padding:28px 0;color:var(--muted);font-size:14px}
+
+/* detail */
+.detail{display:grid;grid-template-columns:1.1fr 1fr;gap:48px;padding:30px 0 70px;align-items:start}
+.stage{background:var(--paper);padding:34px;border-radius:6px;box-shadow:inset 0 0 0 1px var(--line)}
+.stage .frame{box-shadow:var(--shadow);max-width:560px;margin:0 auto}
+.stage .frame>.art{background:var(--mat)}
+.thumbs{display:flex;gap:10px;margin-top:16px;justify-content:center}
+.thumbs button{width:68px;height:68px;border:2px solid transparent;padding:0;background:none;border-radius:4px;overflow:hidden}
+.thumbs button[aria-current=true]{border-color:var(--ultra)}
+.thumbs img,.thumbs svg{width:100%;height:100%;object-fit:cover;display:block}
+.info h1{font-size:clamp(32px,4vw,46px);font-style:italic}
+.info .by{margin:8px 0 18px;color:var(--muted)}
+.info .big{font-family:var(--serif);font-size:34px;font-weight:600}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;margin:18px 0;padding:16px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:15px}
+.facts dt{color:var(--muted)} .facts dd{margin:0}
+.desc{white-space:pre-line;max-width:60ch}
+.paints{margin:22px 0}
+.paints h2{font-size:20px;margin-bottom:10px}
+.swatches{display:flex;flex-wrap:wrap;gap:8px}
+.sw{display:flex;align-items:center;gap:10px;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:5px 14px 5px 5px;font-size:14px}
+.sw i{width:26px;height:26px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)}
+.sw span{color:var(--muted)}
+.buy{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.back{background:none;border:0;padding:18px 0 0;color:var(--muted);font-weight:600}
+
+/* pages */
+.page{padding:34px 0 70px}
+.page>h1,.page .wrap>h1{font-size:40px;margin-bottom:6px}
+.page .lead{color:var(--muted);margin:0 0 26px}
+.cartrow{display:grid;grid-template-columns:90px 1fr auto;gap:16px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+.cartrow .frame{padding:4px}
+.cartrow h3{font-size:20px;font-style:italic}
+.total{display:flex;justify-content:space-between;align-items:center;padding:20px 0;font-family:var(--serif);font-size:26px}
+.note{background:var(--paper);border-left:4px solid var(--ochre);padding:12px 16px;font-size:14px;color:var(--muted);border-radius:0 4px 4px 0;margin:14px 0}
+.grid2{display:grid;grid-template-columns:1.2fr 1fr;gap:44px;align-items:start}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:24px}
+.field{display:grid;gap:6px;margin-bottom:16px}
+.field label{font-weight:600;font-size:14px}
+.field small{color:var(--muted)}
+.field input,.field select,.field textarea{background:var(--wall);border:1px solid var(--line);border-radius:6px;padding:10px 12px;width:100%}
+.field textarea{min-height:120px;resize:vertical}
+.req{color:var(--madder)}
+.err{color:var(--madder);font-size:13px;font-weight:600}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.drop{border:2px dashed var(--line);border-radius:8px;padding:20px;text-align:center;background:var(--wall)}
+.drop.bad{border-color:var(--madder)}
+.prev{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.prev div{position:relative;width:84px;height:84px;border-radius:4px;overflow:hidden}
+.prev img{width:100%;height:100%;object-fit:cover}
+.prev button{position:absolute;top:3px;right:3px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;line-height:1}
+.prow{display:grid;grid-template-columns:1fr 1fr 44px auto;gap:8px;margin-bottom:8px;align-items:center}
+.prow input[type=color]{padding:2px;height:40px}
+.mine{display:grid;gap:12px}
+.mine article{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:center;padding:10px;background:var(--wall);border-radius:6px}
+.mine .frame{padding:3px}
+.mine h3{font-size:17px;font-style:italic}
+
+/* modal + toast */
+dialog{border:0;border-radius:10px;padding:0;background:var(--paper);color:var(--ink);width:min(420px,92vw);box-shadow:0 30px 70px -20px rgba(0,0,0,.6)}
+dialog::backdrop{background:rgba(15,18,12,.55)}
+.dlg{padding:26px}
+.dlg h2{font-size:28px;margin-bottom:4px}
+.tabs{display:flex;gap:4px;margin:14px 0 18px;border-bottom:1px solid var(--line)}
+.tabs button{background:none;border:0;padding:8px 14px;border-bottom:3px solid transparent;font-weight:600;color:var(--muted)}
+.tabs button[aria-selected=true]{color:var(--ink);border-color:var(--ultra)}
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--wall);padding:11px 20px;border-radius:999px;font-size:15px;opacity:0;pointer-events:none;transition:.25s;z-index:50}
+#toast.on{opacity:1;transform:translateX(-50%)}
+.success{text-align:center;padding:80px 0}
+.success h1{font-size:44px;margin-bottom:10px}
+
+@media (max-width:860px){
+  .hero .wrap,.detail,.grid2{grid-template-columns:1fr}
+  .hero{padding-top:24px}
+  .top nav{margin-left:0;order:3;width:100%}
+  .detail{gap:24px}
+  .stage{padding:18px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<header class="top"><div class="wrap" id="header"></div></header>
+<main id="main"></main>
+
+<dialog id="auth" aria-labelledby="authTitle">
+  <div class="dlg" id="authBody"></div>
+</dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ---------- yardımcılar ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const TL = n => Number(n).toLocaleString('tr-TR') + ' ₺';
+let uid = 0, toastT;
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('on'),2200); }
+
+/* ---------- örnek tablo üretici (gerçek fotoğraf yerine) ---------- */
+function art(a, view = 0){
+  const id = ++uid, W = 400, H = Math.round(400 * a.h / a.w), p = a.pal;
+  const vb = view === 1 ? `${W*.05} ${H*.35} ${W*.5} ${H*.5}` : view === 2 ? `${W*.45} ${H*.05} ${W*.5} ${H*.5}` : `0 0 ${W} ${H}`;
+  const g = (c1,c2,stop=1) => `<linearGradient id="g${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="${stop}" stop-color="${c2}"/></linearGradient>`;
+  let body = '';
+  switch(a.type){
+    case 'sunset':
+      body = `<defs>${g(p[0],p[1],.65)}</defs><rect width="${W}" height="${H}" fill="url(#g${id})"/>
+      <circle cx="${W*.62}" cy="${H*.5}" r="${W*.13}" fill="${p[4]}" opacity=".92"/>
+      <g filter="url(#f${id})">
+      <path d="M0 ${H*.6} Q${W*.25} ${H*.46} ${W*.5} ${H*.58} T${W} ${H*.55} V${H} H0Z" fill="${p[2]}"/>
+      <path d="M0 ${H*.74} Q${W*.3} ${H*.62} ${W*.6} ${H*.74} T${W} ${H*.7} V${H} H0Z" fill="${p[3]}"/>
+      <path d="M0 ${H*.88} Q${W*.4} ${H*.78} ${W} ${H*.9} V${H} H0Z" fill="${p[2]}"/>
+      <path d="M0 ${H*.88} Q${W*.4} ${H*.78} ${W} ${H*.9} V${H} H0Z" fill="#000" opacity=".28"/></g>`; break;
+    case 'sea':
+      body = `<defs>${g(p[0],p[1],1)}</defs><rect width="${W}" height="${H}" fill="url(#g${id})"/>
+      <rect y="${H*.52}" width="${W}" height="${H*.48}" fill="${p[2]}"/>
+      <circle cx="${W*.3}" cy="${H*.38}" r="${W*.09}" fill="${p[4]}"/>
+      <g filter="url(#f${id})" stroke="${p[3]}" stroke-width="5" fill="none" stroke-linecap="round">
+      ${[0,1,2,3,4,5].map(i=>`<path d="M${-10+i*8} ${H*(.58+i*.065)} q${W*.1} -14 ${W*.2} 0 t${W*.2} 0 t${W*.2} 0 t${W*.2} 0 t${W*.2} 0" opacity="${.9-i*.1}"/>`).join('')}
+      </g>
+      <g filter="url(#f${id})"><path d="M${W*.62} ${H*.5} v-${H*.2} l${W*.1} ${H*.17}z" fill="#F4EFE2"/><path d="M${W*.6} ${H*.505} h${W*.16} l-${W*.03} ${H*.03} h-${W*.1}z" fill="${p[3]}"/></g>`; break;
+    case 'still':
+      body = `<rect width="${W}" height="${H}" fill="${p[0]}"/>
+      <rect y="${H*.66}" width="${W}" height="${H*.34}" fill="${p[1]}"/>
+      <g filter="url(#f${id})">
+      <ellipse cx="${W*.5}" cy="${H*.8}" rx="${W*.36}" ry="${H*.04}" fill="#000" opacity=".22"/>
+      <path d="M${W*.38} ${H*.32} q-${W*.1} ${H*.2} -${W*.02} ${H*.45} h${W*.28} q${W*.08} -${H*.25} -${W*.02} -${H*.45}z" fill="${p[2]}"/>
+      <rect x="${W*.43}" y="${H*.2}" width="${W*.14}" height="${H*.14}" fill="${p[2]}"/>
+      <circle cx="${W*.25}" cy="${H*.74}" r="${W*.075}" fill="${p[3]}"/>
+      <circle cx="${W*.74}" cy="${H*.75}" r="${W*.085}" fill="${p[4]}"/>
+      <circle cx="${W*.6}" cy="${H*.78}" r="${W*.06}" fill="${p[3]}"/></g>`; break;
+    case 'mountain':
+      body = `<defs>${g(p[0],p[1],.8)}</defs><rect width="${W}" height="${H}" fill="url(#g${id})"/>
+      <g filter="url(#f${id})">
+      <path d="M0 ${H*.65} L${W*.28} ${H*.26} L${W*.5} ${H*.55} L${W*.72} ${H*.2} L${W} ${H*.62} V${H} H0Z" fill="${p[2]}"/>
+      <path d="M${W*.28} ${H*.26} l-${W*.06} ${H*.09} l${W*.04} -${H*.02} l${W*.03} ${H*.04} l${W*.03} -${H*.04}z M${W*.72} ${H*.2} l-${W*.07} ${H*.11} l${W*.05} -${H*.03} l${W*.03} ${H*.05} l${W*.04} -${H*.05}z" fill="#F3F1EA"/>
+      <path d="M0 ${H*.8} Q${W*.5} ${H*.62} ${W} ${H*.8} V${H} H0Z" fill="${p[3]}"/>
+      ${[.1,.22,.8,.9].map((x,i)=>`<path d="M${W*x} ${H*(.7+i%2*.05)} l-${W*.05} ${H*.18} h${W*.1}z" fill="${p[4]}"/>`).join('')}</g>`; break;
+    case 'night':
+      body = `<defs>${g(p[0],p[1],1)}</defs><rect width="${W}" height="${H}" fill="url(#g${id})"/>
+      <circle cx="${W*.75}" cy="${H*.2}" r="${W*.07}" fill="${p[4]}"/>
+      <g fill="none" stroke="${p[3]}" stroke-width="4" opacity=".85" filter="url(#f${id})">
+      <circle cx="${W*.35}" cy="${H*.27}" r="${W*.1}"/><circle cx="${W*.35}" cy="${H*.27}" r="${W*.17}"/><circle cx="${W*.35}" cy="${H*.27}" r="${W*.24}" opacity=".5"/></g>
+      <g filter="url(#f${id})"><path d="M0 ${H*.7} Q${W*.4} ${H*.58} ${W} ${H*.72} V${H} H0Z" fill="${p[2]}"/>
+      ${[.15,.3,.5,.68].map((x,i)=>`<rect x="${W*x}" y="${H*(.74+i%2*.04)}" width="${W*.1}" height="${H*.08}" fill="${p[3]}"/><rect x="${W*x+W*.03}" y="${H*(.76+i%2*.04)}" width="${W*.03}" height="${H*.025}" fill="${p[4]}"/>`).join('')}</g>`; break;
+    default:
+      body = `<rect width="${W}" height="${H}" fill="${p[0]}"/>
+      <g filter="url(#f${id})">
+      <circle cx="${W*.35}" cy="${H*.38}" r="${W*.3}" fill="${p[1]}" opacity=".9"/>
+      <rect x="${W*.4}" y="${H*.3}" width="${W*.45}" height="${H*.5}" fill="${p[2]}" opacity=".85"/>
+      <circle cx="${W*.66}" cy="${H*.7}" r="${W*.2}" fill="${p[3]}" opacity=".9"/>
+      <path d="M${W*.05} ${H*.9} Q${W*.4} ${H*.55} ${W*.95} ${H*.12}" stroke="${p[4]}" stroke-width="12" fill="none" stroke-linecap="round"/></g>`;
+  }
+  return `<svg viewBox="${vb}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${esc(a.title)}">
+  <defs><filter id="f${id}" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".03" numOctaves="2" seed="${a.seed||3}"/><feDisplacementMap in="SourceGraphic" scale="9"/></filter>
+  <filter id="t${id}"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2"/><feColorMatrix type="saturate" values="0"/></filter></defs>
+  ${body}<rect width="${W}" height="${H}" filter="url(#t${id})" opacity=".16" style="mix-blend-mode:multiply"/></svg>`;
+}
+
+/* ---------- veri ---------- */
+const SELLERS = { s1:'Defne Arıkan', s2:'Mert Soylu', s3:'Elif Kaya', s4:'Baran Aksu', s5:'Selin Tunç' };
+const S = {
+  view:'home', id:null, photoIdx:0,
+  user:null, pending:null, authTab:'login',
+  wish:new Set(), cart:[], orderDone:false,
+  filter:{ q:'', tech:'Tümü', sort:'new' },
+  form:{ title:'', tech:'Yağlı boya', size:'', price:'', desc:'', photos:[], paints:[] }, errors:{},
+  works:[
+    { id:1, seller:'s1', title:'Kızıl akşam', type:'sunset', pal:['#3C4A7A','#E58B52','#7A4A5E','#2F3550','#F6D777'], w:4, h:5, tech:'Yağlı boya', size:'50×60 cm', price:3200, desc:'Bir yaz akşamı Ayvalık yolunda gördüğüm ışığı hatırlayarak boyadım.\nSpatulayla kalın sürülen gökyüzü, ince fırçayla tepeler.', paints:[{name:'Ultramarin mavi',code:'W&N 263',color:'#2B3F8C'},{name:'Kadmiyum turuncu',code:'W&N 090',color:'#E4701E'},{name:'Sarı oker',code:'W&N 744',color:'#C9962C'}] },
+    { id:2, seller:'s2', title:'Liman sabahı', type:'sea', pal:['#CFE0E3','#EAF0E6','#3E7A8C','#2E5F73','#F2C86B'], w:5, h:4, tech:'Akrilik', size:'60×48 cm', price:2400, desc:'Sabahın erken saatinde limanda çektiğim bir fotoğraftan yola çıktım. Akrilik, tuval üzerine.', paints:[{name:'Turkuaz',code:'Liquitex 660',color:'#2E8CA0'},{name:'Titanyum beyazı',code:'Liquitex 432',color:'#F5F5F0'}] },
+    { id:3, seller:'s3', title:'Armut ve testi', type:'still', pal:['#D9CFB8','#9B7A58','#3F6B72','#C0A23A','#B4553F'], w:4, h:5, tech:'Yağlı boya', size:'40×50 cm', price:1850, desc:'Klasik natürmort çalışması. Işık soldan geliyor, gölgeleri sıcak tuttum.', paints:[{name:'Doğal siyena',code:'Mussini 440',color:'#7C4A2A'},{name:'Zümrüt yeşili',code:'W&N 241',color:'#1F7A5A'}] },
+    { id:4, seller:'s4', title:'Karlı zirveler', type:'mountain', pal:['#9DB7D5','#E6EDF0','#4A5E7A','#3D5A4C','#243A30'], w:1, h:1, tech:'Yağlı boya', size:'60×60 cm', price:4100, desc:'Uludağ’a kış yürüyüşünden hatırladığım kontrast. Ağır bir mavi ile beyazın kavgası.', paints:[{name:'Prusya mavisi',code:'W&N 538',color:'#1C3B5A'},{name:'Titanyum beyazı',code:'W&N 644',color:'#F5F5F0'}] },
+    { id:5, seller:'s5', title:'Gece köyü', type:'night', pal:['#1D2B5C','#3E5A9A','#16203F','#F0D98A','#F6E27A'], w:5, h:4, tech:'Yağlı boya', size:'70×56 cm', price:5200, desc:'Yıldızlı gece çalışmalarına duyduğum hayranlığın benim yorumum.', paints:[{name:'Kobalt mavisi',code:'W&N 178',color:'#1E4DA0'},{name:'Limon sarısı',code:'W&N 346',color:'#F2D43A'}] },
+    { id:6, seller:'s1', title:'Üç hareket', type:'abstract', pal:['#EFE6D2','#2F4B7C','#C7962B','#A33A4A','#1F241D'], w:4, h:5, tech:'Akrilik', size:'50×65 cm', price:2750, desc:'Renk alanlarıyla ritim denemesi. Eş zamanlı çalıştığım üç küçük eskizin büyütülmüş hali.', paints:[] },
+    { id:7, seller:'s2', title:'Sessiz kıyı', type:'sea', pal:['#E7D5C0','#F2E7D8','#5F8F8A','#3D6B6E','#E9A25B'], w:1, h:1, tech:'Suluboya', size:'30×30 cm', price:900, desc:'Pamuklu kağıt üzerine suluboya. Çerçevesiz, 40×40 paspartulu gönderilir.', paints:[{name:'Kızıl oker',code:'Schmincke 654',color:'#B8683A'}] },
+    { id:8, seller:'s3', title:'Zeytinlik', type:'sunset', pal:['#B9CBA4','#F2E4A8','#6F8A55','#46603A','#E6B84A'], w:5, h:4, tech:'Yağlı boya', size:'60×48 cm', price:2950, desc:'Ege’de bir zeytinlikte öğle sonrası. Gümüşi yeşiller üzerine çalıştım.', paints:[{name:'Olivin yeşili',code:'Mussini 560',color:'#6B7B34'},{name:'Napoli sarısı',code:'W&N 422',color:'#E5C86A'}] }
+  ],
+  nextId:9
+};
+S.works.forEach(w=>w.seed=w.id+2);
+S.sellerName = id => id==='me' ? (S.user?.name || 'Sen') : SELLERS[id];
+const byId = id => S.works.find(w=>w.id===id);
+const heartSvg = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 2.8 5 6.2 5c2 0 3.4 1 5.8 3.2C14.4 6 15.8 5 17.8 5c3.4 0 5.3 3.400 3.8 6.800C19.500 16.400 12 21 12 21z"/></svg>';
+
+/* ---------- ortak parçalar ---------- */
+function media(w, idx = 0){
+  if(w.photos) return `<img src="${w.photos[idx].url}" alt="${esc(w.title)}">`;
+  return art(w, idx);
+}
+function ratio(w){ return w.photos ? `${w.photos[0].w}/${w.photos[0].h}` : `${w.w}/${w.h}`; }
+function frame(w, extra=''){ return `<span class="frame ${extra}"><span class="art" style="aspect-ratio:${ratio(w)}">${media(w)}</span></span>`; }
+const photoCount = w => w.photos ? w.photos.length : 3;
+
+function header(){
+  const u = S.user;
+  $('#header').innerHTML = `
+  <button class="logo" data-a="go" data-v="home" aria-label="Palet ana sayfa">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2.500C8 2.500 2.500 8.500 2.500 16S8 29.500 15 29.500c3.300 0 3.300-2.200 2.200-4.200s-.2-4.300 3-4.300h4c4 0 7.300-2.300 7.300-6.300C31.500 8 24 2.500 16 2.500z" fill="var(--olive)"/><circle cx="9.500" cy="14" r="2.600" fill="var(--ochre)"/><circle cx="15" cy="8.500" r="2.600" fill="var(--ultra)"/><circle cx="22" cy="10" r="2.600" fill="var(--madder)"/><circle cx="9.500" cy="21" r="2.600" fill="var(--wall)"/></svg>
+    Palet</button>
+  <nav aria-label="Ana menü">
+    <button class="btn ghost" data-a="go" data-v="home">Vitrin</button>
+    <button class="btn ghost" data-a="go" data-v="sell">${u?.seller ? 'Satıcı paneli' : 'Satıcı ol'}</button>
+  </nav>
+  <div class="tools">
+    <button class="btn ghost" data-a="go" data-v="wish" aria-label="İstek listesi">İstek listesi ${S.wish.size?`<span class="count">${S.wish.size}</span>`:''}</button>
+    <button class="btn ghost" data-a="go" data-v="cart" aria-label="Sepet">Sepet ${S.cart.length?`<span class="count">${S.cart.length}</span>`:''}</button>
+    ${u ? `<span class="who">${esc(u.name)}${u.seller?' (satıcı)':''}</span><button class="btn sm" data-a="logout">Çıkış yap</button>`
+        : `<button class="btn primary sm" data-a="auth" data-t="login">Giriş yap</button>`}
+  </div>`;
+}
+
+function card(w){
+  const liked = S.wish.has(w.id);
+  return `<article class="work">
+    <button class="frame" data-a="open" data-id="${w.id}" aria-label="${esc(w.title)} sayfasını aç"><span class="art" style="aspect-ratio:${ratio(w)}">${media(w)}</span></button>
+    ${w.sold?'<span class="sold">Satıldı</span>':''}
+    <button class="heart" data-a="wish" data-id="${w.id}" aria-pressed="${liked}" aria-label="${liked?'İstek listesinden çıkar':'İstek listesine ekle'}">${heartSvg}</button>
+    <div class="label">
+      <h3>${esc(w.title)}</h3>
+      <span class="by">${esc(S.sellerName(w.seller))}</span>
+      <div class="row"><span class="small">${esc(w.tech)}, ${esc(w.size||'ölçü belirtilmedi')}</span><span class="price">${TL(w.price)}</span></div>
+    </div></article>`;
+}
+
+/* ---------- sayfalar ---------- */
+function filtered(){
+  const {q,tech,sort} = S.filter;
+  let r = S.works.filter(w => (tech==='Tümü'||w.tech===tech) && (!q || (w.title+' '+S.sellerName(w.seller)+' '+w.desc).toLowerCase().includes(q.toLowerCase())));
+  if(sort==='asc') r.sort((a,b)=>a.price-b.price);
+  else if(sort==='desc') r.sort((a,b)=>b.price-a.price);
+  else r.sort((a,b)=>b.id-a.id);
+  return r;
+}
+function gridHTML(){
+  const r = filtered();
+  return r.length ? r.map(card).join('') : `<div class="empty"><h2>Aramana uyan tablo yok</h2><p>Filtreyi değiştir ya da aramayı temizle.</p></div>`;
+}
+function drawGrid(){ const g=$('#grid'); if(g) g.innerHTML = gridHTML(); }
+
+function home(){
+  const hang = S.works.slice(0,4);
+  const techs = ['Tümü','Yağlı boya','Akrilik','Suluboya'];
+  return `
+  <section class="hero"><div class="wrap">
+    <div>
+      <h1>Tuvalden doğrudan duvarına.</h1>
+      <p>Amatör ressamların yağlı boya ve akrilik tabloları. Fiyatı ressam koyar, her tablo tektir.</p>
+      <div class="cta">
+        <a class="btn primary" href="#vitrin" data-a="scroll">Tabloları gez</a>
+        <button class="btn" data-a="go" data-v="sell">Kendi tablonu sat</button>
+      </div>
+    </div>
+    <div class="hang" aria-label="Seçilmiş tablolar">
+      ${hang.map((w,i)=>`<button class="frame h${i+1}" data-a="open" data-id="${w.id}" aria-label="${esc(w.title)}"><span class="art">${media(w)}</span></button>`).join('')}
+    </div>
+  </div></section>
+
+  <div class="wrap" id="vitrin">
+    <div class="bar">
+      <input type="search" data-f="q" placeholder="Tablo adı, ressam ya da konu ara" value="${esc(S.filter.q)}" aria-label="Ara">
+      <div class="chips" role="group" aria-label="Teknik">${techs.map(t=>`<button class="chip" data-a="tech" data-t="${t}" aria-pressed="${S.filter.tech===t}">${t}</button>`).join('')}</div>
+      <select data-f="sort" aria-label="Sırala">
+        <option value="new" ${S.filter.sort==='new'?'selected':''}>En yeni</option>
+        <option value="asc" ${S.filter.sort==='asc'?'selected':''}>Fiyat: düşükten yükseğe</option>
+        <option value="desc" ${S.filter.sort==='desc'?'selected':''}>Fiyat: yüksekten düşüğe</option>
+      </select>
+    </div>
+    <div class="masonry" id="grid">${gridHTML()}</div>
+  </div>
+
+  <section class="band"><div class="wrap">
+    <h2>Boyadığın tabloyu satmak için ressam olman gerekmiyor.</h2>
+    <ol>
+      <li><b>Fotoğraf yükle</b>Tablonun birkaç açıdan fotoğrafı</li>
+      <li><b>Fiyatı sen koy</b>Açıklama ve fiyat yeterli</li>
+      <li><b>Sat</b>Alıcı öder, tablo yola çıkar</li>
+    </ol>
+    <button class="btn" data-a="go" data-v="sell">Satıcı ol</button>
+  </div></section>
+  <footer><div class="wrap">Palet bir prototiptir. Ödeme ve üyelik adımları simüle edilir.</div></footer>`;
+}
+
+function detail(){
+  const w = byId(S.id); if(!w) return '<div class="wrap empty"><h2>Tablo bulunamadı</h2></div>';
+  const n = photoCount(w), mine = w.seller==='me';
+  const inCart = S.cart.includes(w.id), liked = S.wish.has(w.id);
+  return `<div class="wrap">
+  <button class="back" data-a="go" data-v="home">← Vitrine dön</button>
+  <div class="detail">
+    <div>
+      <div class="stage"><span class="frame"><span class="art" style="aspect-ratio:${ratio(w)}">${media(w,S.photoIdx)}</span></span>
+      ${n>1?`<div class="thumbs">${Array.from({length:n},(_,i)=>`<button data-a="photo" data-i="${i}" aria-current="${i===S.photoIdx}" aria-label="${i+1}. fotoğraf">${media(w,i)}</button>`).join('')}</div>`:''}</div>
+    </div>
+    <div class="info">
+      <h1>${esc(w.title)}</h1>
+      <p class="by">Ressam: ${esc(S.sellerName(w.seller))}</p>
+      <div class="big">${TL(w.price)}</div>
+      <dl class="facts"><dt>Teknik</dt><dd>${esc(w.tech)}</dd><dt>Ölçü</dt><dd>${esc(w.size||'Belirtilmedi')}</dd><dt>Durum</dt><dd>${w.sold?'Satıldı':'Tek parça, satışta'}</dd></dl>
+      <p class="desc">${esc(w.desc)}</p>
+      ${w.paints?.length?`<div class="paints"><h2>Kullanılan boyalar</h2><div class="swatches">${w.paints.map(p=>`<div class="sw"><i style="background:${esc(p.color||'#999')}"></i>${esc(p.name)} <span>${esc(p.code||'')}</span></div>`).join('')}</div></div>`:''}
+      <div class="buy">
+        ${mine ? `<span class="small">Bu tablo senin.</span><button class="btn" data-a="del" data-id="${w.id}">Tabloyu kaldır</button>`
+          : w.sold ? `<button class="btn primary" disabled>Satıldı</button>`
+          : `<button class="btn primary" data-a="cart" data-id="${w.id}">${inCart?'Sepette, sepete git':'Sepete ekle'}</button>`}
+        <button class="btn" data-a="wish" data-id="${w.id}" aria-pressed="${liked}">${liked?'İstek listesinden çıkar':'İstek listesine ekle'}</button>
+      </div>
+    </div>
+  </div></div>`;
+}
+
+function wishPage(){
+  const list = S.works.filter(w=>S.wish.has(w.id));
+  return `<div class="wrap page"><h1>İstek listesi</h1><p class="lead">Beğendiğin tablolar burada bekler.</p>
+  ${list.length?`<div class="masonry">${list.map(card).join('')}</div>`:`<div class="empty"><h2>Listen boş</h2><p>Bir tablonun üstündeki kalbe dokunarak buraya ekle.</p><button class="btn primary" data-a="go" data-v="home">Tabloları gez</button></div>`}</div>`;
+}
+
+function cartPage(){
+  if(S.orderDone) return `<div class="wrap success"><h1>Siparişin alındı</h1><p class="lead">Ressam tabloyu paketleyip göndermek için bilgilendirildi. (Prototip: gerçek ödeme alınmadı.)</p><button class="btn primary" data-a="go" data-v="home">Vitrine dön</button></div>`;
+  const items = S.cart.map(byId).filter(Boolean), total = items.reduce((s,w)=>s+w.price,0);
+  return `<div class="wrap page"><h1>Sepet</h1><p class="lead">Her tablo tek olduğu için adet seçimi yok.</p>
+  ${items.length?`${items.map(w=>`<div class="cartrow"><button class="frame" data-a="open" data-id="${w.id}" aria-label="${esc(w.title)}"><span class="art" style="aspect-ratio:${ratio(w)}">${media(w)}</span></button>
+    <div><h3>${esc(w.title)}</h3><span class="small">${esc(S.sellerName(w.seller))}</span></div>
+    <div style="text-align:right"><div class="price">${TL(w.price)}</div><button class="btn ghost sm" data-a="uncart" data-id="${w.id}">Kaldır</button></div></div>`).join('')}
+  <div class="total"><span>Toplam</span><span>${TL(total)}</span></div>
+  <div class="note">Gerçek sürümde ödeme iyzico veya PayTR gibi bir pazaryeri altyapısıyla alınır; para ressama komisyon düşülerek aktarılır.</div>
+  <button class="btn primary" data-a="checkout">Ödemeye geç</button>`
+  :`<div class="empty"><h2>Sepetin boş</h2><p>Beğendiğin bir tabloyu sepete ekle.</p><button class="btn primary" data-a="go" data-v="home">Tabloları gez</button></div>`}</div>`;
+}
+
+function sellPage(){
+  const u = S.user;
+  if(!u) return `<div class="wrap page"><h1>Satıcı ol</h1><p class="lead">Tablo satmak için önce üye olman gerekir.</p><button class="btn primary" data-a="auth" data-t="register">Üye ol</button></div>`;
+  if(!u.seller) return `<div class="wrap page"><h1>Satıcı ol</h1><p class="lead" style="max-width:56ch">Satıcı olunca kendi tablo sayfalarını açabilirsin. Üyelik haklarını (satın alma, istek listesi) aynen korursun.</p><button class="btn primary" data-a="beSeller">Satıcı hesabını aç</button></div>`;
+  const F = S.form, E = S.errors, mine = S.works.filter(w=>w.seller==='me');
+  return `<div class="wrap page"><h1>Satıcı paneli</h1><p class="lead">Yeni bir tablo sayfası aç. <span class="req">*</span> işaretli alanlar zorunlu.</p>
+  <div class="grid2">
+  <div class="panel">
+    <div class="field"><label>Fotoğraflar <span class="req">*</span></label>
+      <div class="drop ${E.photos?'bad':''}"><input type="file" id="file" accept="image/*" multiple data-a="file" aria-label="Fotoğraf seç"><br><small>En az 1 fotoğraf. Birkaç açıdan çekmen güven verir.</small></div>
+      ${E.photos?`<span class="err">${E.photos}</span>`:''}
+      <div class="prev">${F.photos.map((p,i)=>`<div><img src="${p.url}" alt="Yüklenen fotoğraf ${i+1}"><button data-a="rmphoto" data-i="${i}" aria-label="Fotoğrafı kaldır">×</button></div>`).join('')}</div></div>
+    <div class="field"><label for="f-title">Tablo adı <span class="req">*</span></label><input id="f-title" data-f="form.title" value="${esc(F.title)}">${E.title?`<span class="err">${E.title}</span>`:''}</div>
+    <div class="two">
+      <div class="field"><label for="f-tech">Teknik</label><select id="f-tech" data-f="form.tech">${['Yağlı boya','Akrilik','Suluboya','Karışık teknik'].map(t=>`<option ${F.tech===t?'selected':''}>${t}</option>`).join('')}</select></div>
+      <div class="field"><label for="f-size">Ölçü</label><input id="f-size" data-f="form.size" placeholder="50×70 cm" value="${esc(F.size)}"></div>
+    </div>
+    <div class="field"><label for="f-price">Fiyat (₺) <span class="req">*</span></label><input id="f-price" type="number" min="1" inputmode="numeric" data-f="form.price" value="${esc(F.price)}">${E.price?`<span class="err">${E.price}</span>`:''}</div>
+    <div class="field"><label for="f-desc">Açıklama <span class="req">*</span></label><textarea id="f-desc" data-f="form.desc">${esc(F.desc)}</textarea><small>Tablonun hikâyesi, hangi yüzeye boyandığı, vernik durumu.</small>${E.desc?`<span class="err">${E.desc}</span>`:''}</div>
+    <div class="field"><label>Kullandığın boyalar (isteğe bağlı)</label>
+      ${F.paints.map((p,i)=>`<div class="prow"><input data-f="paint.${i}.name" placeholder="Boya adı" value="${esc(p.name)}" aria-label="Boya adı"><input data-f="paint.${i}.code" placeholder="Kod (ör. W&N 263)" value="${esc(p.code)}" aria-label="Boya kodu"><input type="color" data-f="paint.${i}.color" value="${esc(p.color)}" aria-label="Renk"><button class="btn ghost sm" data-a="rmpaint" data-i="${i}" aria-label="Boyayı kaldır">×</button></div>`).join('')}
+      <button class="btn sm" data-a="addpaint" style="justify-self:start">Boya ekle</button></div>
+    <button class="btn primary" data-a="publish">Tabloyu yayınla</button>
+  </div>
+  <div class="panel"><h2 style="font-size:24px;margin-bottom:14px">Tablolarım</h2>
+    ${mine.length?`<div class="mine">${mine.map(w=>`<article><span class="frame"><span class="art" style="aspect-ratio:1/1">${media(w)}</span></span><div><h3>${esc(w.title)}</h3><span class="small">${TL(w.price)}${w.sold?', satıldı':''}</span></div><button class="btn sm" data-a="del" data-id="${w.id}">Kaldır</button></article>`).join('')}</div>`:`<p class="small">Henüz tablo eklemedin. Soldaki formla ilk tablonu yayınla.</p>`}
+  </div></div></div>`;
+}
+
+/* ---------- render ---------- */
+function render(){
+  header();
+  const m = $('#main');
+  m.innerHTML = ({home, detail, wish:wishPage, cart:cartPage, sell:sellPage}[S.view])();
+}
+function go(v, id=null){ S.view=v; S.id=id; S.photoIdx=0; if(v==='cart') S.orderDone = S.orderDone && false; render(); window.scrollTo(0,0); }
+
+/* ---------- giriş ---------- */
+const authDlg = $('#auth');
+function authHTML(){
+  const reg = S.authTab==='register';
+  return `<h2 id="authTitle">${reg?'Üye ol':'Giriş yap'}</h2>
+  <div class="tabs" role="tablist"><button role="tab" data-a="auth" data-t="login" aria-selected="${!reg}">Giriş</button><button role="tab" data-a="auth" data-t="register" aria-selected="${reg}">Üye ol</button></div>
+  ${reg?`<div class="field"><label for="a-name">Ad soyad</label><input id="a-name" autocomplete="name"></div>`:''}
+  <div class="field"><label for="a-mail">E-posta</label><input id="a-mail" type="email" autocomplete="email"></div>
+  <div class="field"><label for="a-pass">Şifre</label><input id="a-pass" type="password" autocomplete="${reg?'new-password':'current-password'}"></div>
+  <span class="err" id="a-err"></span>
+  <div style="display:flex;gap:8px;margin-top:6px"><button class="btn primary" data-a="authgo">${reg?'Üye ol':'Giriş yap'}</button><button class="btn ghost" data-a="authclose">Vazgeç</button></div>
+  <p class="small">Prototipte hesap gerçekten oluşturulmaz.</p>`;
+}
+function openAuth(tab='login'){ S.authTab=tab; $('#authBody').innerHTML=authHTML(); if(!authDlg.open) authDlg.showModal(); }
+function needLogin(fn){ if(S.user) fn(); else { S.pending=fn; toast('Önce giriş yapmalısın'); openAuth('login'); } }
+
+/* ---------- olaylar ---------- */
+document.addEventListener('click', e=>{
+  const el = e.target.closest('[data-a]'); if(!el || el.tagName==='INPUT') return;
+  const a = el.dataset.a, id = Number(el.dataset.id);
+  switch(a){
+    case 'go': go(el.dataset.v); break;
+    case 'scroll': e.preventDefault(); document.getElementById('vitrin')?.scrollIntoView({behavior:'smooth'}); break;
+    case 'open': go('detail', id); break;
+    case 'photo': S.photoIdx=Number(el.dataset.i); render(); break;
+    case 'tech': S.filter.tech=el.dataset.t; document.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed', c.dataset.t===S.filter.tech)); drawGrid(); break;
+    case 'wish': needLogin(()=>{ S.wish.has(id)?S.wish.delete(id):S.wish.add(id); toast(S.wish.has(id)?'İstek listesine eklendi':'İstek listesinden çıkarıldı'); render(); }); break;
+    case 'cart': needLogin(()=>{ if(S.cart.includes(id)) return go('cart'); S.cart.push(id); toast('Sepete eklendi'); render(); }); break;
+    case 'uncart': S.cart=S.cart.filter(x=>x!==id); render(); break;
+    case 'checkout': needLogin(()=>{ S.cart.forEach(i=>{const w=byId(i); if(w) w.sold=true;}); S.cart=[]; S.orderDone=true; render(); }); break;
+    case 'auth': openAuth(el.dataset.t); break;
+    case 'authclose': authDlg.close(); S.pending=null; break;
+    case 'authgo': {
+      const mail=$('#a-mail').value.trim(), pass=$('#a-pass').value, name=$('#a-name')?.value.trim();
+      if(!mail.includes('@')||pass.length<4||(S.authTab==='register'&&!name)){ $('#a-err').textContent = S.authTab==='register'?'Ad, geçerli bir e-posta ve en az 4 karakterli şifre gir.':'Geçerli bir e-posta ve şifre gir.'; break; }
+      S.user = { name: name || mail.split('@')[0], seller:false };
+      authDlg.close(); toast('Hoş geldin, '+S.user.name);
+      const p=S.pending; S.pending=null; render(); if(p) p(); break; }
+    case 'logout': S.user=null; S.cart=[]; go('home'); toast('Çıkış yapıldı'); break;
+    case 'beSeller': S.user.seller=true; toast('Satıcı hesabın açıldı'); render(); break;
+    case 'addpaint': S.form.paints.push({name:'',code:'',color:'#2F4B7C'}); render(); break;
+    case 'rmpaint': S.form.paints.splice(Number(el.dataset.i),1); render(); break;
+    case 'rmphoto': S.form.photos.splice(Number(el.dataset.i),1); render(); break;
+    case 'del': if(confirm('Bu tablo kaldırılsın mı?')){ S.works=S.works.filter(w=>w.id!==id); S.cart=S.cart.filter(x=>x!==id); S.wish.delete(id); toast('Tablo kaldırıldı'); go(S.view==='detail'?'home':S.view); } break;
+    case 'publish': publish(); break;
+  }
+});
+document.addEventListener('input', e=>{
+  const f = e.target.dataset.f; if(!f) return;
+  const v = e.target.value;
+  if(f==='q'){ S.filter.q=v; drawGrid(); }
+  else if(f==='sort'){ S.filter.sort=v; drawGrid(); }
+  else if(f.startsWith('form.')) S.form[f.slice(5)] = v;
+  else if(f.startsWith('paint.')){ const [,i,k]=f.split('.'); S.form.paints[i][k]=v; }
+});
+document.addEventListener('change', e=>{
+  if(e.target.dataset.a!=='file') return;
+  const files=[...e.target.files]; if(!files.length) return;
+  let left=files.length;
+  files.forEach(file=>{
+    const url=URL.createObjectURL(file), img=new Image();
+    img.onload=()=>{ S.form.photos.push({url,w:img.naturalWidth,h:img.naturalHeight}); if(--left===0){ S.errors.photos=''; render(); } };
+    img.onerror=()=>{ if(--left===0) render(); };
+    img.src=url;
+  });
+});
+authDlg.addEventListener('close',()=>{});
+
+function publish(){
+  const F=S.form, E={};
+  if(!F.photos.length) E.photos='En az bir fotoğraf yüklemelisin.';
+  if(!F.title.trim()) E.title='Tablo adı gerekli.';
+  if(!(Number(F.price)>0)) E.price='Geçerli bir fiyat gir.';
+  if(!F.desc.trim()) E.desc='Kısa bir açıklama yaz.';
+  S.errors=E;
+  if(Object.keys(E).length){ render(); toast('Zorunlu alanları tamamla'); return; }
+  S.works.push({ id:S.nextId++, seller:'me', title:F.title.trim(), tech:F.tech, size:F.size.trim(), price:Number(F.price), desc:F.desc.trim(),
+    photos:F.photos.slice(), paints:F.paints.filter(p=>p.name.trim()||p.code.trim()), seed:5 });
+  S.form={ title:'', tech:'Yağlı boya', size:'', price:'', desc:'', photos:[], paints:[] };
+  toast('Tablon yayınlandı'); render();
+}
+
+render();
+</script>
+</body>
+  </html>
