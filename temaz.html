@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TƏMAZ — Tezliklə</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #eef6f4;
+    --ink: #0d3a42;
+    --soft: #5f8a8f;
+    --glow: rgba(111, 211, 201, 0.45);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #08242a;
+      --ink: #e6f6f3;
+      --soft: #7fb4b5;
+      --glow: rgba(70, 180, 170, 0.28);
+      color-scheme: dark;
+    }
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Bricolage Grotesque", "Segoe UI", system-ui, -apple-system, sans-serif;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* soft glow behind the title */
+  body::before {
+    content: "";
+    position: absolute;
+    width: 70vmin;
+    height: 70vmin;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--glow), transparent 68%);
+    animation: breathe 7s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  main {
+    position: relative;
+    text-align: center;
+    padding: 0 1.5rem;
+  }
+
+  h1 {
+    font-weight: 800;
+    font-size: clamp(3.6rem, 19vw, 15rem);
+    line-height: 1;
+    letter-spacing: 0.02em;
+    display: flex;
+    justify-content: center;
+    gap: 0.02em;
+  }
+
+  h1 span {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(0.35em) scale(0.92);
+    filter: blur(22px);
+    animation: clear 1.3s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+    animation-delay: calc(0.25s + var(--i) * 0.18s);
+  }
+
+  p {
+    margin-top: clamp(1rem, 3vw, 2rem);
+    font-weight: 300;
+    font-size: clamp(1rem, 3.2vw, 1.8rem);
+    letter-spacing: 0.5em;
+    padding-left: 0.5em; /* balances trailing letter-spacing */
+    color: var(--soft);
+    opacity: 0;
+    animation: soon 1.6s ease forwards;
+    animation-delay: 1.9s;
+  }
+
+  p i {
+    font-style: normal;
+    display: inline-block;
+    animation: dot 1.4s ease-in-out infinite;
+  }
+  p i:nth-child(1) { animation-delay: 3.5s; }
+  p i:nth-child(2) { animation-delay: 3.7s; }
+  p i:nth-child(3) { animation-delay: 3.9s; }
+
+  @keyframes clear {
+    to { opacity: 1; transform: none; filter: blur(0); }
+  }
+  @keyframes soon {
+    from { opacity: 0; letter-spacing: 0.9em; }
+    to   { opacity: 1; letter-spacing: 0.5em; }
+  }
+  @keyframes dot {
+    0%, 100% { opacity: 1; transform: translateY(0); }
+    50%      { opacity: 0.25; transform: translateY(-0.18em); }
+  }
+  @keyframes breathe {
+    0%, 100% { transform: scale(0.92); opacity: 0.8; }
+    50%      { transform: scale(1.08); opacity: 1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    h1 span, p { animation: none; opacity: 1; transform: none; filter: none; }
+    p i, body::before { animation: none; }
+  }
+</style>
+</head>
+<body>
+  <main>
+    <h1 aria-label="TƏMAZ">
+      <span style="--i:0" aria-hidden="true">T</span>
+      <span style="--i:1" aria-hidden="true">Ə</span>
+      <span style="--i:2" aria-hidden="true">M</span>
+      <span style="--i:3" aria-hidden="true">A</span>
+      <span style="--i:4" aria-hidden="true">Z</span>
+    </h1>
+    <p>TEZLİKLƏ<i>.</i><i>.</i><i>.</i></p>
+  </main>
+</body>
+</html>
