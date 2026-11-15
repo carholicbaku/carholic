@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14213d">
+<title>Ana ekran</title>
+<style>
+  :root {
+    --ink: #ffffff;
+    --shadow: 0 1px 3px rgba(0,0,0,.55);
+    --wall-a: #101b3a;
+    --wall-b: #2c5a8c;
+    --wall-c: #e8955a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(120% 70% at 85% 100%, var(--wall-c) 0%, transparent 55%),
+      radial-gradient(90% 60% at 10% 0%, #4b7fb8 0%, transparent 60%),
+      linear-gradient(160deg, var(--wall-a), var(--wall-b));
+    background-attachment: fixed;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  a:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+
+  /* ---------- İkonlar (ortaq) ---------- */
+  .tile {
+    display: grid; place-items: center;
+    background: var(--bg);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.28), 0 6px 14px rgba(0,0,0,.35);
+  }
+  .tile svg { width: 56%; height: 56%; fill: none; stroke: #fff; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+  .tile svg .f { fill: #fff; stroke: none; }
+
+  /* ---------- MOBİL ---------- */
+  #phone { display: flex; flex-direction: column; height: 100%; padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+  #desktop { display: none; }
+
+  .status {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 26px 6px; font-size: 15px; font-weight: 600; text-shadow: var(--shadow);
+  }
+  .status .sys { display: flex; gap: 6px; align-items: center; }
+  .status svg { width: 18px; height: 18px; fill: #fff; }
+
+  .app-grid {
+    flex: 1; min-height: 0;
+    display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(4, 1fr);
+    padding: 18px 14px 28px; gap: 4px 0;
+  }
+  .app { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-width: 0; }
+  .app .tile { width: min(21vw, 14vh, 92px); aspect-ratio: 1; border-radius: 24%; transition: transform .12s ease; }
+  .app:active .tile { transform: scale(.9); }
+  .app span { font-size: 13px; text-shadow: var(--shadow); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .home-bar { height: 5px; width: 34%; margin: 0 auto 8px; border-radius: 3px; background: rgba(255,255,255,.75); flex: none; }
+
+  /* ---------- PC ---------- */
+  @media (min-width: 900px) and (hover: hover) and (pointer: fine), (min-width: 1100px) {
+    #phone { display: none; }
+    #desktop { display: flex; flex-direction: column; height: 100%; }
+
+    .icons {
+      flex: 1; min-height: 0;
+      display: grid; grid-auto-flow: column;
+      grid-template-rows: repeat(auto-fill, 104px); grid-auto-columns: 100px;
+      align-content: start; justify-content: start;
+      padding: 14px;
+    }
+    .icon {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      padding: 8px 4px; border-radius: 6px; border: 1px solid transparent;
+      transition: background .12s ease, border-color .12s ease;
+    }
+    .icon .tile { width: 54px; height: 54px; border-radius: 14px; }
+    .icon span { font-size: 12.5px; text-align: center; text-shadow: var(--shadow); line-height: 1.2; }
+    .icon:hover, .icon:focus-visible { background: rgba(255,255,255,.16); border-color: rgba(255,255,255,.32); outline: none; }
+    .icon:active { background: rgba(255,255,255,.26); }
+
+    .taskbar {
+      flex: none; height: 48px; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 12px; background: rgba(12,18,36,.72);
+      -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+      border-top: 1px solid rgba(255,255,255,.12);
+    }
+    .start { display: grid; place-items: center; width: 40px; height: 36px; border-radius: 6px; }
+    .start:hover { background: rgba(255,255,255,.14); }
+    .start svg { width: 20px; height: 20px; fill: #6cb6ff; }
+    .tray { text-align: right; font-size: 12px; line-height: 1.25; padding: 2px 8px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<!-- Mobil görünüş -->
+<main id="phone" aria-label="Mobil ana ekran">
+  <div class="status">
+    <span class="clock">--:--</span>
+    <span class="sys" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M2 18h3v3H2zM7 14h3v7H7zM12 10h3v11h-3zM17 5h3v16h-3z"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M2 8a15 15 0 0 1 20 0l-2 2.4a12 12 0 0 0-16 0zM6 12.6a9 9 0 0 1 12 0l-2 2.4a6 6 0 0 0-8 0zM10 17.2a3 3 0 0 1 4 0L12 20z"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M3 8h16a1 1 0 0 1 1 1v1h1.5v4H20v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1zm1.5 2v4h13v-4z"/></svg>
+    </span>
+  </div>
+  <nav class="app-grid" id="appGrid" aria-label="Tətbiqlər"></nav>
+  <div class="home-bar"></div>
+</main>
+
+<!-- PC görünüş -->
+<div id="desktop" aria-label="Masaüstü">
+  <nav class="icons" id="iconGrid" aria-label="Tətbiqlər"></nav>
+  <div class="taskbar">
+    <a class="start" href="#" aria-label="Başlat" onclick="return false"><svg viewBox="0 0 24 24"><path d="M3 4.5l8-1.1V11H3zM12 3.3l9-1.3V11h-9zM3 12h8v7.6l-8-1.1zM12 12h9v9l-9-1.3z"/></svg></a>
+    <div class="tray"><div class="clock">--:--</div><div class="date"></div></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   TƏTBİQLƏR — adı, linki, rəngi və ikonu buradan dəyişə bilərsiniz
+   ============================================================ */
+const apps = [
+  { name: "Axtarış",  url: "https://www.google.com",       color: ["#4c8bf5","#2a5fd0"], icon: '<circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5.5 5.5"/>' },
+  { name: "Video",    url: "https://www.youtube.com",      color: ["#ff5a4f","#d6201a"], icon: '<rect x="3" y="5.5" width="18" height="13" rx="4"/><path class="f" d="M10.2 9.3v5.4l4.6-2.7z"/>' },
+  { name: "Poçt",     url: "https://mail.google.com",      color: ["#f4a742","#d9791a"], icon: '<rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M3.5 7.5l8.5 6 8.5-6"/>' },
+  { name: "Xəritə",   url: "https://maps.google.com",      color: ["#4cc38a","#1f9a63"], icon: '<path d="M12 21s-6.5-5.7-6.5-11a6.5 6.5 0 0 1 13 0c0 5.3-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>' },
+  { name: "Hava",     url: "https://www.timeanddate.com/weather/", color: ["#5ec4f0","#2a86c9"], icon: '<circle cx="9" cy="9" r="3.2"/><path d="M9 2.8v1.4M2.8 9h1.4M4.6 4.6l1 1M13.4 4.6l-1 1"/><path d="M8 19h9.5a3.5 3.5 0 0 0 .3-7 5 5 0 0 0-9.4 1.3A3 3 0 0 0 8 19z"/>' },
+  { name: "Xəbərlər", url: "https://news.google.com",      color: ["#7c7f8a","#4a4d58"], icon: '<rect x="4" y="4" width="16" height="16" rx="2.5"/><path d="M8 9h8M8 12.5h8M8 16h5"/>' },
+  { name: "Musiqi",   url: "https://open.spotify.com",     color: ["#ff6b9a","#d02f6d"], icon: '<path d="M9 17V6l10-2v11"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="15.5" r="2.5"/>' },
+  { name: "Şəkillər", url: "https://photos.google.com",    color: ["#a77cf0","#6a3fcf"], icon: '<rect x="3.5" y="4.5" width="17" height="15" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M4 17l5-4.5 3.5 3 3-2.5 4.5 4"/>' },
+  { name: "Qeydlər",  url: "https://keep.google.com",      color: ["#f7d046","#d5a514"], icon: '<path d="M6 3.5h9l3.5 3.5v13.5H6z"/><path d="M9 11h7M9 14.5h7M9 18h4"/>' },
+  { name: "Mağaza",   url: "https://www.amazon.com",       color: ["#ff9248","#e0561c"], icon: '<path d="M5 8h14l-1 12H6z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>' },
+  { name: "Hesab",    url: "https://myaccount.google.com", color: ["#3fc6c0","#1b8f98"], icon: '<circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c.8-4 4-6 7.5-6s6.700 2 7.500 6"/>' },
+  { name: "Ayarlar",  url: "https://support.google.com",   color: ["#8e94a3","#565b6b"], icon: '<circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/>' }
+];
+
+function tile(a) {
+  return `<div class="tile" style="--bg:linear-gradient(155deg,${a.color[0]},${a.color[1]})">
+    <svg viewBox="0 0 24 24" aria-hidden="true">${a.icon}</svg></div>`;
+}
+function render(el, cls) {
+  el.innerHTML = apps.map(a =>
+    `<a class="${cls}" href="${a.url}" target="_blank" rel="noopener noreferrer" aria-label="${a.name}">
+       ${tile(a)}<span>${a.name}</span></a>`
+  ).join("");
+}
+render(document.getElementById("appGrid"), "app");
+render(document.getElementById("iconGrid"), "icon");
+
+/* Saat və tarix */
+function tick() {
+  const d = new Date();
+  const t = d.toLocaleTimeString("az-AZ", { hour: "2-digit", minute: "2-digit" });
+  document.querySelectorAll(".clock").forEach(e => e.textContent = t);
+  document.querySelectorAll(".date").forEach(e => e.textContent = d.toLocaleDateString("az-AZ"));
+}
+tick(); setInterval(tick, 15000);
+</script>
+</body>
+</html>
