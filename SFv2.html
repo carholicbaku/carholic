@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14213d">
+<title>Ana ekran</title>
+<style>
+  :root {
+    --ink: #ffffff;
+    --shadow: 0 1px 3px rgba(0,0,0,.55);
+    --wall-a: #101b3a;
+    --wall-b: #2c5a8c;
+    --wall-c: #e8955a;
+    --wall-default:
+      radial-gradient(120% 70% at 85% 100%, var(--wall-c) 0%, transparent 55%),
+      radial-gradient(90% 60% at 10% 0%, #4b7fb8 0%, transparent 60%),
+      linear-gradient(160deg, var(--wall-a), var(--wall-b));
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    background: var(--wall-default);
+    background-attachment: fixed;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  a:focus-visible, button:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+  button.app { border: 0; padding: 0; }
+  button.app, button.icon { background: none; color: inherit; font: inherit; cursor: pointer; }
+  .soon { cursor: default; opacity: .75; }
+
+  /* ---------- İkonlar (ortaq) ---------- */
+  .tile {
+    display: grid; place-items: center;
+    background: var(--bg);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.28), 0 6px 14px rgba(0,0,0,.35);
+  }
+  .tile svg { width: 56%; height: 56%; fill: none; stroke: #fff; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+  .tile svg .f { fill: #fff; stroke: none; }
+
+  /* ---------- MOBİL ---------- */
+  #phone { display: flex; flex-direction: column; height: 100%; padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+  #desktop { display: none; }
+
+  .app-grid {
+    flex: 1; min-height: 0;
+    display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(4, 1fr);
+    padding: 34px 14px 28px; gap: 4px 0;
+  }
+  .app { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-width: 0; }
+  .app .tile { width: min(21vw, 14vh, 92px); aspect-ratio: 1; border-radius: 24%; transition: transform .12s ease; }
+  .app:active .tile { transform: scale(.9); }
+  .app span { font-size: 13px; text-shadow: var(--shadow); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .home-bar { height: 5px; width: 34%; margin: 0 auto 8px; border-radius: 3px; background: rgba(255,255,255,.75); flex: none; }
+
+  /* ---------- Ayarlar pəncərəsi ---------- */
+  .sheet {
+    position: fixed; inset: 0; z-index: 20;
+    display: flex; align-items: flex-end; justify-content: center;
+    background: rgba(5,10,25,.5);
+    opacity: 0; visibility: hidden;
+    transition: opacity .2s ease, visibility .2s;
+  }
+  .sheet.open { opacity: 1; visibility: visible; }
+  .win {
+    width: 100%; max-height: 90%; display: flex; flex-direction: column;
+    background: rgba(18,26,48,.95);
+    -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+    border-radius: 22px 22px 0 0;
+    padding-bottom: env(safe-area-inset-bottom);
+    box-shadow: 0 -10px 40px rgba(0,0,0,.4);
+    transform: translateY(24px); transition: transform .22s ease;
+    user-select: text; -webkit-user-select: text;
+  }
+  .sheet.open .win { transform: none; }
+  .win-bar { display: flex; justify-content: space-between; align-items: center; padding: 16px 18px 10px; }
+  .win-bar strong { font-size: 18px; }
+  .x {
+    width: 34px; height: 34px; border-radius: 50%; border: 0; cursor: pointer;
+    background: rgba(255,255,255,.12); color: #fff; display: grid; place-items: center;
+  }
+  .x:hover { background: rgba(255,255,255,.22); }
+  .x svg { width: 16px; height: 16px; stroke: #fff; stroke-width: 2.2; stroke-linecap: round; fill: none; }
+  .win-body { overflow: auto; padding: 6px 18px 22px; display: grid; gap: 14px; }
+  .group { background: rgba(255,255,255,.07); border-radius: 14px; padding: 14px; }
+  .group h3 { font-size: 12.5px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; opacity: .7; margin-bottom: 10px; }
+  .wp-preview {
+    height: 150px; border-radius: 10px; border: 1px solid rgba(255,255,255,.22);
+    background: var(--wall-default);
+  }
+  .btns { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+  .btn {
+    flex: 1 1 auto; padding: 11px 14px; border-radius: 10px; cursor: pointer;
+    border: 1px solid rgba(255,255,255,.22); background: rgba(255,255,255,.08);
+    color: #fff; font: inherit; font-size: 14px; font-weight: 600; text-align: center;
+  }
+  .btn:hover { background: rgba(255,255,255,.16); }
+  .btn.primary { background: #3b82f6; border-color: #3b82f6; }
+  .btn.primary:hover { background: #2f6fdc; }
+  .hint { font-size: 12.5px; opacity: .8; margin-top: 10px; min-height: 1.2em; }
+
+  /* ---------- PC ---------- */
+  @media (min-width: 900px) and (hover: hover) and (pointer: fine), (min-width: 1100px) {
+    #phone { display: none; }
+    #desktop { display: flex; flex-direction: column; height: 100%; }
+
+    .icons {
+      flex: 1; min-height: 0;
+      display: grid; grid-auto-flow: column;
+      grid-template-rows: repeat(auto-fill, 104px); grid-auto-columns: 100px;
+      align-content: start; justify-content: start;
+      padding: 14px;
+    }
+    .icon {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      padding: 8px 4px; border-radius: 6px; border: 1px solid transparent;
+      transition: background .12s ease, border-color .12s ease;
+    }
+    .icon .tile { width: 54px; height: 54px; border-radius: 14px; }
+    .icon span { font-size: 12.5px; text-align: center; text-shadow: var(--shadow); line-height: 1.2; }
+    .icon:not(.soon):hover, .icon:focus-visible { background: rgba(255,255,255,.16); border-color: rgba(255,255,255,.32); outline: none; }
+    .icon:not(.soon):active { background: rgba(255,255,255,.26); }
+
+    .taskbar {
+      flex: none; height: 48px; display: flex; align-items: center;
+      padding: 0 12px; background: rgba(12,18,36,.72);
+      -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+      border-top: 1px solid rgba(255,255,255,.12);
+    }
+    .start { display: grid; place-items: center; width: 40px; height: 36px; border-radius: 6px; }
+    .start:hover { background: rgba(255,255,255,.14); }
+    .start svg { width: 20px; height: 20px; fill: #6cb6ff; }
+
+    .sheet { align-items: center; }
+    .win { width: 460px; max-height: 80%; border-radius: 12px; border: 1px solid rgba(255,255,255,.14); box-shadow: 0 24px 60px rgba(0,0,0,.5); transform: translateY(10px); }
+  }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<!-- Mobil görünüş -->
+<main id="phone" aria-label="Mobil ana ekran">
+  <nav class="app-grid" id="appGrid" aria-label="Tətbiqlər"></nav>
+  <div class="home-bar"></div>
+</main>
+
+<!-- PC görünüş -->
+<div id="desktop" aria-label="Masaüstü">
+  <nav class="icons" id="iconGrid" aria-label="Tətbiqlər"></nav>
+  <div class="taskbar">
+    <a class="start" href="#" aria-label="Başlat" onclick="return false"><svg viewBox="0 0 24 24"><path d="M3 4.5l8-1.1V11H3zM12 3.3l9-1.3V11h-9zM3 12h8v7.6l-8-1.1zM12 12h9v9l-9-1.3z"/></svg></a>
+  </div>
+</div>
+
+<!-- Ayarlar -->
+<div class="sheet" id="settings" role="dialog" aria-modal="true" aria-labelledby="sTitle" aria-hidden="true">
+  <div class="win">
+    <div class="win-bar">
+      <strong id="sTitle">Ayarlar</strong>
+      <button type="button" class="x" id="sClose" aria-label="Bağla"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="win-body">
+      <section class="group">
+        <h3>Arxa plan</h3>
+        <div class="wp-preview" id="wpPreview"></div>
+        <div class="btns">
+          <button type="button" class="btn primary" id="wpPick">Qalereyadan seç</button>
+          <button type="button" class="btn" id="wpReset">Standart</button>
+        </div>
+        <input type="file" id="wpFile" accept="image/*" hidden>
+        <p class="hint" id="wpMsg" aria-live="polite"></p>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   TƏTBİQLƏR — adı, linki, rəngi və ikonu buradan dəyişə bilərsiniz
+   url: "" olarsa heç bir sayt açılmır.  action: "settings" → Ayarlar pəncərəsi
+   ============================================================ */
+const SOON = { name: "Tezliklə", url: "", soon: true, color: ["#8e94a3","#565b6b"],
+  icon: '<circle cx="12" cy="12" r="8.500"/><path d="M12 7.500V12l3 2"/>' };
+
+const apps = [
+  { name: "SciBlend",     url: "https://carholicbaku.github.io/carholic/testSBsiteV1.html", color: ["#5b7cfa","#3347c9"], icon: '<path d="M9.5 3.5h5M10.5 3.5v6L5 19a1.5 1.5 0 0 0 1.3 2.2h11.4A1.5 1.5 0 0 0 19 19l-5.500-9.500v-6"/><path d="M7.5 15h9"/>' },
+  { name: "CarHolicBaku", url: "https://carholicbaku.github.io/carholic/va123v4.html",      color: ["#ff5a4f","#c4201a"], icon: '<path d="M4 17v-4.500l2-5h12l2 5V17M4 12.500h16"/><circle cx="7.500" cy="17" r="1.600"/><circle cx="16.500" cy="17" r="1.600"/>' },
+  { name: "SənətAz",      url: "https://carholicbaku.github.io/carholic/tablo.html",        color: ["#a77cf0","#6a3fcf"], icon: '<path d="M12 3.500a8.500 8.500 0 1 0 0 17c1.500 0 2-1 1.500-2.200-.6-1.300.2-2.300 1.600-2.300H17a3.500 3.500 0 0 0 3.500-3.500C20.500 7 16.700 3.500 12 3.500z"/><circle class="f" cx="8" cy="11" r="1"/><circle class="f" cx="11" cy="7.500" r="1"/><circle class="f" cx="15.500" cy="8.500" r="1"/>' },
+  { name: "TəmAz",        url: "https://carholicbaku.github.io/carholic/temaz.html",        color: ["#f4a742","#d9791a"], icon: '<path d="M14.700 6.300a4 4 0 0 0-5 5L4 17l3 3 5.700-5.700a4 4 0 0 0 5-5l-2.500 2.500-2.200-.6-.6-2.200z"/>' },
+  { name: "TəsGə",        url: "https://carholicbaku.github.io/carholic/tesge.html",        color: ["#4cc38a","#1f9a63"], icon: '<path d="M12 3.500l7 2.500v5.500c0 4.500-3 8-7 9.500-4-1.500-7-5-7-9.500V6z"/><path d="M9 12l2.200 2.200L15.500 10"/>' },
+  { name: "ŞərikAz",      url: "", color: ["#3fc6c0","#1b8f98"], icon: '<circle cx="8.500" cy="8.500" r="2.800"/><circle cx="16" cy="9.500" r="2.300"/><path d="M3.500 19c.5-3.200 2.500-5 5-5s4.500 1.800 5 5M14.500 14.300c.5-.2 1-.3 1.500-.3 2.200 0 3.800 1.600 4.300 4.500"/>' },
+  SOON, SOON, SOON, SOON, SOON,
+  { name: "Ayarlar", action: "settings", color: ["#6d7ba3","#3c4a73"], icon: '<circle cx="12" cy="12" r="3.200"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.600 5.600l2.100 2.100M16.300 16.300l2.100 2.100M18.400 5.600l-2.100 2.100M7.700 16.300l-2.100 2.100"/>' }
+];
+
+function tile(a) {
+  return `<div class="tile" style="--bg:linear-gradient(155deg,${a.color[0]},${a.color[1]})">
+    <svg viewBox="0 0 24 24" aria-hidden="true">${a.icon}</svg></div>`;
+}
+function render(el, cls) {
+  el.innerHTML = apps.map(a => {
+    const inner = `${tile(a)}<span>${a.name}</span>`;
+    if (a.action) return `<button type="button" class="${cls}" data-action="${a.action}" aria-label="${a.name}">${inner}</button>`;
+    if (a.url) return `<a class="${cls}" href="${a.url}" target="_blank" rel="noopener noreferrer" aria-label="${a.name}">${inner}</a>`;
+    return `<div class="${cls}${a.soon ? " soon" : ""}" aria-label="${a.name}">${inner}</div>`;
+  }).join("");
+}
+render(document.getElementById("appGrid"), "app");
+render(document.getElementById("iconGrid"), "icon");
+
+/* ---------- Ayarlar pəncərəsi ---------- */
+const sheet = document.getElementById("settings");
+const closeBtn = document.getElementById("sClose");
+let lastTrigger = null;
+
+function openSettings(trigger) {
+  lastTrigger = trigger;
+  sheet.classList.add("open");
+  sheet.setAttribute("aria-hidden", "false");
+  closeBtn.focus();
+}
+function closeSettings() {
+  sheet.classList.remove("open");
+  sheet.setAttribute("aria-hidden", "true");
+  if (lastTrigger) lastTrigger.focus();
+}
+document.addEventListener("click", e => {
+  const t = e.target.closest('[data-action="settings"]');
+  if (t) openSettings(t);
+});
+closeBtn.addEventListener("click", closeSettings);
+sheet.addEventListener("click", e => { if (e.target === sheet) closeSettings(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && sheet.classList.contains("open")) closeSettings(); });
+
+/* ---------- Arxa plan (qalereyadan) ---------- */
+const WP_KEY = "wallpaper";
+const wpFile = document.getElementById("wpFile");
+const wpPreview = document.getElementById("wpPreview");
+const wpMsg = document.getElementById("wpMsg");
+
+function applyWallpaper(dataUrl) {
+  if (dataUrl) {
+    document.body.style.background =
+      `linear-gradient(rgba(0,0,0,.18), rgba(0,0,0,.18)), url("${dataUrl}") center / cover no-repeat fixed`;
+    wpPreview.style.background = `url("${dataUrl}") center / cover no-repeat`;
+  } else {
+    document.body.style.background = "";
+    wpPreview.style.background = "";
+  }
+}
+
+function fileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const max = 1920;
+      const r = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.width * r);
+      c.height = Math.round(img.height * r);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      resolve(c.toDataURL("image/jpeg", 0.85));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("bad image")); };
+    img.src = url;
+  });
+}
+
+function save(dataUrl) {
+  try {
+    if (dataUrl) localStorage.setItem(WP_KEY, dataUrl); else localStorage.removeItem(WP_KEY);
+    return true;
+  } catch (_) { return false; }
+}
+
+document.getElementById("wpPick").addEventListener("click", () => wpFile.click());
+
+wpFile.addEventListener("change", async () => {
+  const file = wpFile.files && wpFile.files[0];
+  wpFile.value = "";
+  if (!file) return;
+  if (!file.type.startsWith("image/")) { wpMsg.textContent = "Zəhmət olmasa şəkil faylı seçin."; return; }
+  try {
+    const dataUrl = await fileToDataUrl(file);
+    applyWallpaper(dataUrl);
+    wpMsg.textContent = save(dataUrl)
+      ? "Arxa plan dəyişdirildi."
+      : "Arxa plan dəyişdirildi, lakin bu cihazda yadda saxlanmadı.";
+  } catch (_) {
+    wpMsg.textContent = "Şəkil açıla bilmədi. Başqa şəkil seçin.";
+  }
+});
+
+document.getElementById("wpReset").addEventListener("click", () => {
+  applyWallpaper(null);
+  save(null);
+  wpMsg.textContent = "Standart arxa plana qayıdıldı.";
+});
+
+/* Əvvəl seçilmiş arxa planı yüklə */
+try {
+  const saved = localStorage.getItem(WP_KEY);
+  if (saved) applyWallpaper(saved);
+} catch (_) {}
+</script>
+</body>
+</html>
